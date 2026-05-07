@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(claude-api)",
+      "Bash(npm install *)",
+      "Bash(node -e \"const a = require\\('@anthropic-ai/sdk'\\); console.log\\(Object.keys\\(a\\)\\)\")",
+      "Bash(node -e \"import\\('./src/chat.js'\\).then\\(\\(\\)=>console.log\\('chat.js loads ok'\\)\\).catch\\(e=>{console.error\\(e\\);process.exit\\(1\\)}\\)\")",
+      "Bash(grep -E \"\\\\.\\(md|json|toml|txt|yml|yaml\\)$|Makefile\")",
+      "Bash(npm run *)",
+      "Bash(curl *)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:nasa.github.io)",
+      "Bash(node -e \"const g = require\\('./node_modules/react-globe.gl/dist/react-globe.gl.js'\\); console.log\\('loaded'\\)\")",
+      "Bash(npx tsc *)",
+      "Bash(npx next *)",
+      "Read(//c/Users/prata/.claude/projects/d--top-projects-india2world/**)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts|json\\)$\")",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\top projects\\\\india2world\\\\frontend\" -Recurse -Filter \"*.tsx\" -File)",
+      "Bash(Select-Object -First 30 FullName)",
+      "Bash(Get-ChildItem -Path \"D:\\\\top projects\\\\india2world\" -Recurse -Depth 2)",
+      "Bash(Select-Object -Property FullName)",
+      "Bash(Get-ChildItem *)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\top projects\\\\india2world\" -Recurse -Depth 3 | Where-Object {$_.PSIsContainer -eq $false} | Select-Object -ExpandProperty FullName)",
+      "Bash(\\\\.ts\")",
+      "WebSearch",
+      "Bash(Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\top projects\\\\india2world\\\\frontend\\\\app\\\\\\(public\\)\" -Recurse -Force | Where-Object {$_.PSIsContainer -eq $false} | Select-Object FullName)",
+      "Bash(Get-Content *)",
+      "Bash(findstr /i \"tailwind config\")",
+      "Bash(Select-Object Name)",
+      "Bash(Sort-Object FullName)",
+      "Bash(npm show *)",
+      "Bash(node -e \"require\\('dotenv/config'\\); console.log\\('ANTHROPIC:', process.env.ANTHROPIC_API_KEY?.slice\\(0,20\\)\\); console.log\\('GROQ:', process.env.GROQ_API_KEY?.slice\\(0,15\\)\\); console.log\\('GEMINI:', process.env.GEMINI_API_KEY?.slice\\(0,15\\)\\); console.log\\('TAVILY:', process.env.TAVILY_API_KEY?.slice\\(0,15\\)\\);\")",
+      "Bash(node -e \"const c = require\\('@clerk/express'\\); console.log\\(Object.keys\\(c\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(node -e \"const n=require\\('next/package.json'\\); console.log\\(n.version\\)\")",
+      "Bash(npm uninstall *)"
+    ]
+  }
+}

@@ -1,0 +1,163 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Saffron scale */
+  --saffron-50:  #fff7ed;
+  --saffron-100: #ffedd5;
+  --saffron-200: #fed7aa;
+  --saffron-300: #fdba74;
+  --saffron-400: #fb923c;
+  --saffron-500: #FF9933;
+  --saffron-600: #ea7c19;
+  --saffron-700: #c2560a;
+
+  /* India green scale */
+  --india-green-50:  #f0fdf4;
+  --india-green-100: #dcfce7;
+  --india-green-200: #bbf7d0;
+  --india-green-500: #138808;
+  --india-green-600: #0f6b06;
+  --india-green-700: #0a5004;
+
+  /* Gold accent */
+  --gold-400: #fbbf24;
+  --gold-500: #f59e0b;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  --india-green-500: #22c55e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Saffron */
+  --color-saffron-50:  var(--saffron-50);
+  --color-saffron-100: var(--saffron-100);
+  --color-saffron-200: var(--saffron-200);
+  --color-saffron-300: var(--saffron-300);
+  --color-saffron-400: var(--saffron-400);
+  --color-saffron-500: var(--saffron-500);
+  --color-saffron-600: var(--saffron-600);
+  --color-saffron-700: var(--saffron-700);
+
+  /* India green */
+  --color-india-green-50:  var(--india-green-50);
+  --color-india-green-100: var(--india-green-100);
+  --color-india-green-200: var(--india-green-200);
+  --color-india-green-500: var(--india-green-500);
+  --color-india-green-600: var(--india-green-600);
+  --color-india-green-700: var(--india-green-700);
+
+  /* Gold */
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Tricolor logo mark — vertical 3-stripe India flag */
+.tricolor-gradient {
+  background: linear-gradient(
+    to bottom,
+    #FF9933 33.333%,
+    #ffffff 33.333% 66.666%,
+    #138808 66.666%
+  );
+}
+
+/* Dot-grid background texture */
+.bg-dot-grid {
+  background-image: radial-gradient(circle, rgba(251, 146, 60, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Prose override for saffron links in AI chat */
+.prose-india a {
+  color: var(--saffron-600);
+  text-decoration-color: var(--saffron-200);
+}
+.prose-india a:hover {
+  color: var(--saffron-700);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-18px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,153,51,0.3); }
+  50%       { box-shadow: 0 0 20px 6px rgba(255,153,51,0.15); }
+}
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.animate-float         { animation: float 6s ease-in-out infinite; }
+.animate-float-delayed { animation: float 7s ease-in-out 2s infinite; }
+
+/* Gradient border on hover via ::before mask */
+.gradient-border { position: relative; }
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(135deg, var(--saffron-300), var(--india-green-200), var(--saffron-200));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.gradient-border:hover::before { opacity: 1; }
+
+/* Spinning rings for hero decoration */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes spin-slow-reverse {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+.animate-spin-slow         { animation: spin-slow 20s linear infinite; }
+.animate-spin-slow-reverse { animation: spin-slow-reverse 30s linear infinite; }
+
+/* Dark dot-grid for dark hero backgrounds */
+.bg-dot-grid-dark {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Shimmer for buttons */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.btn-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}

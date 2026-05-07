@@ -1,0 +1,367 @@
+export type GlossaryTerm = {
+  term: string;
+  shortForm?: string;
+  definition: string;
+  category: "registration" | "documentation" | "finance" | "logistics" | "compliance" | "organisation" | "scheme";
+};
+
+export const GLOSSARY_TERMS: GlossaryTerm[] = [
+  {
+    term: "Importer Exporter Code",
+    shortForm: "IEC",
+    definition: "A 10-digit PAN-linked code issued by DGFT. Mandatory for any business importing or exporting goods or services from India. Apply online at dgft.gov.in. No annual renewal required — linked to PAN.",
+    category: "registration",
+  },
+  {
+    term: "AD Code",
+    definition: "Authorised Dealer (AD) Code — a 14-digit code issued by your bank's branch. Must be registered with the customs port from which you export. Required to receive export proceeds and for filing shipping bills. Each port requires separate AD code registration.",
+    category: "registration",
+  },
+  {
+    term: "RCMC",
+    shortForm: "RCMC",
+    definition: "Registration-cum-Membership Certificate issued by an Export Promotion Council (EPC). Mandatory to avail export incentives (RoDTEP, Advance Authorisation, EPCG) and to export certain products. Each sector has a specific EPC — e.g. AEPC for apparel, TEXPROCIL for cotton textiles, EEPC for engineering.",
+    category: "registration",
+  },
+  {
+    term: "GST LUT",
+    definition: "Letter of Undertaking (LUT) under GST — allows exporters to export goods/services without paying IGST, treating the export as zero-rated. File annually on the GST portal before the first export of the financial year. Alternative: pay IGST and claim refund (slower, ties up working capital).",
+    category: "registration",
+  },
+  {
+    term: "Shipping Bill",
+    definition: "The primary export document filed with Indian Customs on ICEGATE. Acts as the export declaration — contains description, HS code, FOB value, drawback/RoDTEP claims, etc. There are different types: Free Shipping Bill, Drawback Shipping Bill, DEEC Shipping Bill, etc. Filed electronically by a customs broker (CHA).",
+    category: "documentation",
+  },
+  {
+    term: "Bill of Lading",
+    shortForm: "BoL / BL",
+    definition: "A document issued by the shipping line confirming receipt of goods for shipment. It serves as (1) receipt of goods, (2) contract of carriage, and (3) document of title (negotiable BoL). For air shipments, the equivalent is the Air Waybill (AWB). Original BoL required by buyer to take delivery at destination.",
+    category: "documentation",
+  },
+  {
+    term: "Air Waybill",
+    shortForm: "AWB",
+    definition: "Non-negotiable transport document for air shipments, issued by the airline/freight agent. Unlike a BoL, it is not a document of title — consignee can take delivery without the original. Contains shipment details, shipper, consignee, charges.",
+    category: "documentation",
+  },
+  {
+    term: "Commercial Invoice",
+    definition: "An invoice issued by the exporter to the importer stating the sale — goods description, quantity, unit price, total value, Incoterm, currency. Used by customs in both countries to assess duties. Must match the shipping bill, packing list, and LC terms precisely.",
+    category: "documentation",
+  },
+  {
+    term: "Packing List",
+    definition: "A document detailing the contents of each package/carton in the shipment — item descriptions, quantities, weights (gross/net), dimensions, and package numbers. Must match the commercial invoice. Used by destination customs for examination.",
+    category: "documentation",
+  },
+  {
+    term: "Certificate of Origin",
+    shortForm: "COO",
+    definition: "A document certifying that goods originate from India. Required by importers/customs to claim preferential duty under FTAs (e.g. SAFTA, ASEAN FTA, MERCOSUR PTA). Issued by Export Inspection Council (EIC), FIEO, or notified chambers of commerce. Preferential COO (Form A, SAFTA, etc.) issued by DGFT.",
+    category: "documentation",
+  },
+  {
+    term: "Packing Credit",
+    shortForm: "PC",
+    definition: "Pre-shipment export credit provided by banks to finance production/procurement of export goods — available in Indian rupees or foreign currency (PCFC). Repaid when export proceeds are realised. Eligible for interest subvention under the Interest Equalisation Scheme.",
+    category: "finance",
+  },
+  {
+    term: "Pre-Shipment Credit in Foreign Currency",
+    shortForm: "PCFC",
+    definition: "Export working capital credit given in USD/EUR/GBP at LIBOR/SOFR-linked rates, typically much lower than rupee rates. Used to fund procurement/production before export. Repaid from export proceeds. Natural hedge for exporters with imported inputs.",
+    category: "finance",
+  },
+  {
+    term: "Foreign Inward Remittance Certificate",
+    shortForm: "FIRC",
+    definition: "A certificate issued by the exporter's bank confirming receipt of foreign exchange. Proof that export proceeds have been received. Required for GST refund claims, SEIS claims, and as evidence of foreign currency earnings.",
+    category: "finance",
+  },
+  {
+    term: "Bank Realisation Certificate",
+    shortForm: "BRC",
+    definition: "Issued by the exporter's bank confirming realisation of export proceeds against a shipping bill. Required to close export obligations under Advance Authorisation, EPCG, and for DGFT/Customs purposes. Now generated online via the bank's EDPMS (Export Data Processing & Monitoring System) portal.",
+    category: "finance",
+  },
+  {
+    term: "Letter of Credit",
+    shortForm: "LC",
+    definition: "A bank guarantee issued by the importer's bank promising payment to the exporter upon presentation of compliant shipping documents. The safest payment method for the exporter — payment is from the bank, not the buyer. Types: Sight LC (immediate payment), Usance/Time LC (deferred payment). FEMA compliant.",
+    category: "finance",
+  },
+  {
+    term: "Documents Against Payment",
+    shortForm: "DP / D/P",
+    definition: "A payment term where the exporter's bank releases shipping documents to the importer's bank only when the importer pays. The importer needs the BoL to clear goods at destination. More risk than LC (no bank guarantee), but exporter retains title to goods until payment.",
+    category: "finance",
+  },
+  {
+    term: "Documents Against Acceptance",
+    shortForm: "DA / D/A",
+    definition: "A payment term where documents (and title to goods) are released to the importer upon acceptance of a time draft (promise to pay on a future date — typically 30/60/90 days). Significant credit risk for the exporter — ECGC cover recommended for new buyers.",
+    category: "finance",
+  },
+  {
+    term: "FEMA",
+    shortForm: "FEMA",
+    definition: "Foreign Exchange Management Act, 1999 — governs foreign exchange transactions in India including receipt of export proceeds, payment terms, and repatriation timelines. Exporters must realise export proceeds within 9 months (or 15 months for certain categories). Violations can attract RBI/ED penalties.",
+    category: "compliance",
+  },
+  {
+    term: "SOFTEX Form",
+    definition: "Declaration for export of software and IT services in non-physical form (cloud, internet, satellite). Filed by IT/ITES exporters with the STPI or RBI-designated authority. Required for foreign exchange realisation reporting under FEMA. Replaced older manual forms.",
+    category: "compliance",
+  },
+  {
+    term: "EDPMS",
+    definition: "Export Data Processing and Monitoring System — RBI's online platform tracking export shipping bills and corresponding foreign exchange realisation. Banks report inward remittances here. Exporters can see their shipping bill-to-BRC reconciliation status and raise queries on EDPMS.",
+    category: "compliance",
+  },
+  {
+    term: "EGM",
+    definition: "Export General Manifest — filed by the shipping line/airline with Customs after a vessel/aircraft departs India, confirming that declared export cargo was actually loaded. Required for drawback, RoDTEP credit, and export obligation discharge. Typically filed within 7 days of departure.",
+    category: "documentation",
+  },
+  {
+    term: "CHA",
+    shortForm: "CHA",
+    definition: "Customs House Agent (now called Customs Broker under CBLR 2018) — a licensed professional who files shipping bills, Bill of Entry, and handles customs clearance formalities on behalf of exporters/importers. Licensed by CBIC. Essential for most exporters to navigate ICEGATE.",
+    category: "compliance",
+  },
+  {
+    term: "ICEGATE",
+    definition: "Indian Customs and Central Excise Electronic Commerce/EDI Gateway — the online portal for filing import/export declarations, paying customs duties, checking drawback/RoDTEP ledger, tracking shipment status. Primary interface between traders and Indian Customs.",
+    category: "organisation",
+  },
+  {
+    term: "DGFT",
+    shortForm: "DGFT",
+    definition: "Directorate General of Foreign Trade — the authority under the Ministry of Commerce that formulates and implements India's Foreign Trade Policy. Manages IEC, RCMC, export licences (Advance Authorisation, EPCG), scheme applications, and restricted/prohibited goods list. Portal: dgft.gov.in.",
+    category: "organisation",
+  },
+  {
+    term: "CBIC",
+    shortForm: "CBIC",
+    definition: "Central Board of Indirect Taxes and Customs — oversees customs administration, IGST, GST. Manages ICEGATE, drawback schedule, and customs tariff. Portal: cbic.gov.in.",
+    category: "organisation",
+  },
+  {
+    term: "APEDA",
+    shortForm: "APEDA",
+    definition: "Agricultural and Processed Food Products Export Development Authority — statutory body under Ministry of Commerce promoting agri-food exports. Mandatory registration for exporters of fresh fruits/vegetables, processed food, meat, poultry, cereals, dairy. Provides financial assistance and quality certification. Portal: apeda.gov.in.",
+    category: "organisation",
+  },
+  {
+    term: "Spices Board",
+    definition: "Statutory body regulating and promoting export of spices from India. Registration mandatory for spice exporters. Provides quality certification, testing labs, variety registration. 52 spices are under its purview. Portal: indianspices.com.",
+    category: "organisation",
+  },
+  {
+    term: "AEPC",
+    shortForm: "AEPC",
+    definition: "Apparel Export Promotion Council — the EPC for garment exporters (Chapters 61, 62). Issues RCMC for apparel exporters. Organises trade fairs (Source India), buyer-seller meets, and administers RoSCTL scrip issuance. Membership gives access to export data and support. Portal: aepcindia.com.",
+    category: "organisation",
+  },
+  {
+    term: "TEXPROCIL",
+    definition: "The Cotton Textiles Export Promotion Council — EPC for cotton yarn, fabrics, and made-ups. Issues RCMC for cotton textile exporters. Important for woven fabrics, yarn, and home textiles. Portal: texprocil.org.",
+    category: "organisation",
+  },
+  {
+    term: "EEPC",
+    shortForm: "EEPC",
+    definition: "Engineering Export Promotion Council of India — EPC for engineering goods (machinery, metals, auto parts, electrical items). Issues RCMC. Major organiser of engineering trade fairs (IMTEX, Engineering Source India). Portal: eepcindia.org.",
+    category: "organisation",
+  },
+  {
+    term: "GJEPC",
+    shortForm: "GJEPC",
+    definition: "Gem and Jewellery Export Promotion Council — the EPC for gems and jewellery (Chapter 71). Issues RCMC. Administers India International Jewellery Show (IIJS). Key for Surat diamond trade. Portal: gjepc.org.",
+    category: "organisation",
+  },
+  {
+    term: "PHARMEXCIL",
+    definition: "Pharmaceuticals Export Promotion Council — EPC for pharma exporters (bulk drugs, formulations). Issues RCMC. Tracks WHO-GMP certificates, organises PharmaTech events. Portal: pharmexcil.com.",
+    category: "organisation",
+  },
+  {
+    term: "EPCH",
+    shortForm: "EPCH",
+    definition: "Export Promotion Council for Handicrafts — EPC for handicrafts, gifts, wooden/metalware, glassware, handmade products. Issues RCMC. Organises India International Handicraft Fair. Portal: epch.com.",
+    category: "organisation",
+  },
+  {
+    term: "CLE",
+    shortForm: "CLE",
+    definition: "Council for Leather Exports — EPC for leather goods, footwear, finished leather. Issues RCMC. Key body for Kanpur, Chennai, Agra leather clusters. Portal: leatherindia.org.",
+    category: "organisation",
+  },
+  {
+    term: "FOB",
+    shortForm: "FOB",
+    definition: "Free On Board — an Incoterm where the seller is responsible for all costs and risks until the goods are loaded onto the vessel at the named port of shipment. From that point, costs and risk transfer to the buyer. Commonly used for sea shipments. Export value for Customs/Drawback is always on FOB basis.",
+    category: "logistics",
+  },
+  {
+    term: "CIF",
+    shortForm: "CIF",
+    definition: "Cost, Insurance and Freight — an Incoterm where the seller pays freight and insurance to the named destination port. Risk transfers to buyer once goods are loaded on the vessel (same as FOB for risk transfer, different for cost responsibility). Used for sea shipments only.",
+    category: "logistics",
+  },
+  {
+    term: "EXW",
+    shortForm: "EXW",
+    definition: "Ex Works — seller's minimum obligation. Goods made available at the seller's premises (factory/warehouse). Buyer arranges and pays for all transport, export customs, freight, and insurance. Maximum risk/cost for buyer. Not recommended for most export transactions as it can cause FEMA issues.",
+    category: "logistics",
+  },
+  {
+    term: "DDP",
+    shortForm: "DDP",
+    definition: "Delivered Duty Paid — seller's maximum obligation. Seller delivers goods to buyer's premises with all import duties paid. Seller responsible for import customs in destination country. Complex — requires seller to have import entity in destination or use a fiscal representative.",
+    category: "logistics",
+  },
+  {
+    term: "FCL",
+    shortForm: "FCL",
+    definition: "Full Container Load — exporter fills an entire shipping container (20ft or 40ft). Cost-effective for large shipments. Seal is placed at origin and typically remains intact until destination. Also called 'shipper's own container' (SOC) when the exporter owns the container.",
+    category: "logistics",
+  },
+  {
+    term: "LCL",
+    shortForm: "LCL",
+    definition: "Less than Container Load — goods from multiple exporters consolidated into a shared container by a freight forwarder/NVOCC. More expensive per CBM than FCL but suitable for smaller shipments. Longer transit times due to consolidation and deconsolidation.",
+    category: "logistics",
+  },
+  {
+    term: "ITC-HS Code",
+    shortForm: "HS Code",
+    definition: "Indian Trade Classification based on the Harmonised System — an 8-digit code classifying every traded product. First 6 digits are global (WTO Harmonised System); last 2 digits are India-specific. Determines export/import duties, scheme eligibility, and whether a product is free/restricted/prohibited. Maintained by DGFT/CBIC.",
+    category: "documentation",
+  },
+  {
+    term: "RoDTEP",
+    shortForm: "RoDTEP",
+    definition: "Remission of Duties and Taxes on Exported Products — a WTO-compliant export incentive scheme that refunds embedded duties and taxes (central, state, local levies) not otherwise rebated. Replaced MEIS from Jan 2021. Benefit is a duty credit scrip (% of FOB value) credited to ICEGATE e-scrip ledger. Rates vary by HS code.",
+    category: "scheme",
+  },
+  {
+    term: "MEIS",
+    shortForm: "MEIS",
+    definition: "Merchandise Exports from India Scheme — the predecessor to RoDTEP. Provided duty credit scrips as % of FOB value. Discontinued/replaced by RoDTEP from January 2021 due to WTO compliance concerns. Pending MEIS claims from before 2021 are still being processed.",
+    category: "scheme",
+  },
+  {
+    term: "Drawback",
+    definition: "Duty Drawback — a refund (cash to bank account) of customs duties paid on inputs used in manufacturing export goods. Two types: All Industry Rate (AIR) — fixed percentage of FOB value by product; Brand Rate — actual duty paid, for products not covered by AIR. Filed through the Shipping Bill. Claimed via CBIC.",
+    category: "scheme",
+  },
+  {
+    term: "EPCG",
+    shortForm: "EPCG",
+    definition: "Export Promotion Capital Goods Scheme — allows import of capital goods at zero customs duty, subject to an export obligation (6x CIF value over 6 years). Helps manufacturers upgrade technology without upfront duty burden. Managed by DGFT.",
+    category: "scheme",
+  },
+  {
+    term: "Phytosanitary Certificate",
+    definition: "A certificate issued by India's NPPO (National Plant Protection Organisation — part of DPPQ) certifying that plant-based exports meet the phytosanitary requirements of the importing country. Mandatory for fresh produce, seeds, and plant-derived products to most countries.",
+    category: "compliance",
+  },
+  {
+    term: "FSSAI",
+    shortForm: "FSSAI",
+    definition: "Food Safety and Standards Authority of India — regulates food products in India. Export-specific registration (FSSAI Export Certificate / Health Certificate) required for food products to many countries. Also issues Health Certificates required by certain importers.",
+    category: "compliance",
+  },
+  {
+    term: "CDSCO",
+    shortForm: "CDSCO",
+    definition: "Central Drugs Standard Control Organisation — India's drug regulator under the Ministry of Health. Issues export NOC (No Objection Certificate) for pharmaceutical products. WHO-GMP certificates issued through CDSCO for pharma plants. Drug Master Files (DMF) filed here for bulk drugs.",
+    category: "compliance",
+  },
+  {
+    term: "Kimberley Process Certificate",
+    shortForm: "KPC",
+    definition: "An international certification scheme to prevent conflict diamonds from entering the mainstream rough diamond trade. Mandatory for all rough diamond imports and exports from India (managed through GJEPC and DGFT).",
+    category: "compliance",
+  },
+  {
+    term: "SCOMET",
+    definition: "Special Chemicals, Organisms, Materials, Equipment and Technologies — India's dual-use export control list. Items on SCOMET list require specific export licences from DGFT. Critical for high-tech, chemical, and defence-related exports. Violations treated very seriously.",
+    category: "compliance",
+  },
+  {
+    term: "EIC",
+    shortForm: "EIC",
+    definition: "Export Inspection Council — statutory body conducting pre-shipment inspection and certification for certain notified export commodities (seafood, dairy, eggs, honey, meat, fish meal, castor oil, etc.). Issues Export Inspection Agency (EIA) certificates required by importing countries.",
+    category: "organisation",
+  },
+  {
+    term: "FIEO",
+    shortForm: "FIEO",
+    definition: "Federation of Indian Export Organisations — apex export promotion body in India. Issues Certificate of Origin, organises trade delegations, and provides RCMC for service exporters. Membership helpful for access to trade information and buyer directories.",
+    category: "organisation",
+  },
+  {
+    term: "SEZ",
+    shortForm: "SEZ",
+    definition: "Special Economic Zone — a geographically delineated area treated as foreign territory for customs purposes. Goods exported from SEZ get duty-free inputs, no CST/IGST on domestic procurement for export. Major SEZs: SEEPZ (gems/jewellery), NSEZ Noida, Surat Diamond SEZ. Operate under the SEZ Act 2005.",
+    category: "organisation",
+  },
+  {
+    term: "EOU",
+    shortForm: "EOU",
+    definition: "Export Oriented Unit — a manufacturing unit committed to exporting 100% of its output (with some domestic sales allowed). Gets duty-free import of inputs, capital goods, and IGST exemption on domestic procurement. Less rigid than SEZ — can be located anywhere in India. Approved by Development Commissioner.",
+    category: "compliance",
+  },
+  {
+    term: "Star Export House",
+    definition: "An export status conferred by DGFT based on export performance over the previous three years: One Star ($3M FOB), Two Star ($25M), Three Star ($100M), Four Star ($500M), Five Star ($2B). Benefits include priority customs clearance, self-certification of COO, lower bank guarantees for EPCG/AA, and eligibility for certain government incentives.",
+    category: "scheme",
+  },
+  {
+    term: "Advance Authorisation",
+    shortForm: "AA",
+    definition: "A duty-free import licence for inputs used in manufacturing export goods, issued by DGFT under FTP. Covers basic customs duty, CVD, anti-dumping duty on inputs. Export obligation must be fulfilled within 18 months. Inputs imported under AA cannot be sold domestically. Applied online on DGFT portal.",
+    category: "scheme",
+  },
+  {
+    term: "Pre-Shipment Inspection",
+    shortForm: "PSI",
+    definition: "Inspection of export goods before loading, required by certain importing countries (e.g. many African nations, some Asian countries) or buyers. Conducted by agencies like SGS, Bureau Veritas, Intertek, or India's EIC. Confirms quality, quantity, and compliance with contract specifications before export.",
+    category: "compliance",
+  },
+  {
+    term: "Customs Duty",
+    definition: "A tax levied by the government on goods imported into or exported from India. Import customs duty structure includes Basic Customs Duty (BCD), Social Welfare Surcharge (SWS), and IGST. Export customs duty applies to specific products (iron ore, some agricultural items). Rates published in the CBIC Customs Tariff.",
+    category: "compliance",
+  },
+  {
+    term: "MPEDA",
+    shortForm: "MPEDA",
+    definition: "Marine Products Export Development Authority — statutory body promoting export of marine products (shrimp, fish, cephalopods). Registration mandatory for seafood exporters. Grants EU Health Marks, manages traceability systems, and supports HACCP certification. Portal: mpeda.gov.in.",
+    category: "organisation",
+  },
+  {
+    term: "FOB Value",
+    definition: "Free On Board value — the price of goods at the Indian port of export, excluding ocean freight and insurance. This is the basis for calculating export incentives (RoDTEP, Duty Drawback), customs duty assessments, and GST refunds. All export statistics in India are reported on FOB basis.",
+    category: "logistics",
+  },
+  {
+    term: "Working Capital Finance",
+    definition: "Short-term credit to fund the operating cycle of export production. Includes Pre-Shipment Credit (Packing Credit) and Post-Shipment Credit. Eligible for Interest Equalisation Scheme (interest subvention). Foreign currency working capital (PCFC) at lower SOFR-linked rates is popular for import-intensive exporters.",
+    category: "finance",
+  },
+  {
+    term: "Inward Remittance",
+    definition: "Foreign currency received in India by an exporter in payment for export of goods or services. Must be realised within the prescribed time limit under FEMA (9 months for most goods, 15 months for project exports, 12 months for software/services). Realised proceeds reported to RBI via EDPMS.",
+    category: "finance",
+  },
+  {
+    term: "ECGC",
+    shortForm: "ECGC",
+    definition: "Export Credit Guarantee Corporation of India — a government-owned insurer providing export credit insurance. Protects exporters against non-payment risk (buyer insolvency, political risk, protracted default). Also provides guarantees to banks for export credit. Key products: ECIB (Export Credit Insurance for Banks), Specific Shipment Policy.",
+    category: "scheme",
+  },
+];

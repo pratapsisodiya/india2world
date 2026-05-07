@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ConvertTo-Json)",
+      "Bash(Out-String)"
+    ]
+  }
+}
