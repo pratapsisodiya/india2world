@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Sun, Moon, Monitor, Trash2, Download, CheckCircle2, Circle } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Sun, Moon, Monitor, Trash2, Download, CheckCircle2, Circle,
+  User, Palette, Target, Award, MessageSquare, Info,
+  Building2, MapPin, Package, Banknote, ShieldCheck, Globe2,
+  Check,
+} from "lucide-react";
 import { useThemeStore, type Theme } from "@/store/theme";
 import { useUserStore, type ExportStage, type BusinessType, type UserProfile } from "@/store/user";
 import { useChatStore } from "@/store/chat";
@@ -31,8 +36,8 @@ const sectorOptions = [
 const businessTypeOptions: { value: BusinessType; label: string; desc: string }[] = [
   { value: "manufacturer", label: "Manufacturer", desc: "You make the product you export" },
   { value: "trader", label: "Trader / Merchant", desc: "You buy and resell for export" },
-  { value: "merchant-exporter", label: "Merchant Exporter", desc: "You export on behalf of manufacturers" },
-  { value: "service", label: "Service Exporter", desc: "IT, ITES, consulting, or other services" },
+  { value: "merchant-exporter", label: "Merchant Exporter", desc: "Export on behalf of manufacturers" },
+  { value: "service", label: "Service Exporter", desc: "IT, ITES, consulting, or services" },
 ];
 
 const CURRENCIES = ["USD", "EUR", "GBP", "AED", "SGD", "AUD", "JPY", "CNY"];
@@ -50,7 +55,7 @@ const COMPLIANCE_OPTIONS = [
   "EEPC (Engineering)",
 ];
 
-function profileCompleteness(profile: UserProfile): number {
+function profileCompleteness(profile: UserProfile): { score: number; filled: number; total: number } {
   const fields = [
     !!profile.businessName,
     !!profile.businessType,
@@ -63,7 +68,34 @@ function profileCompleteness(profile: UserProfile): number {
     profile.hasIEC,
     (profile.complianceFocus ?? []).length > 0,
   ];
-  return Math.round((fields.filter(Boolean).length / fields.length) * 100);
+  const filled = fields.filter(Boolean).length;
+  return { score: Math.round((filled / fields.length) * 100), filled, total: fields.length };
+}
+
+function SectionHeading({ icon: Icon, title, subtitle }: { icon: typeof User; title: string; subtitle?: string }) {
+  return (
+    <div className="mb-4 flex items-center gap-2.5">
+      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-saffron-50 dark:bg-saffron-500/10">
+        <Icon className="h-4 w-4 text-saffron-600 dark:text-saffron-400" />
+      </div>
+      <div>
+        <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">{title}</h2>
+        {subtitle && <p className="text-xs text-zinc-400">{subtitle}</p>}
+      </div>
+    </div>
+  );
+}
+
+function AutoSaveToast({ show }: { show: boolean }) {
+  return (
+    <div className={cn(
+      "fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-xs font-medium text-white shadow-lg transition-all duration-300 dark:bg-white dark:text-zinc-900",
+      show ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"
+    )}>
+      <Check className="h-3.5 w-3.5 text-india-green-400 dark:text-india-green-600" />
+      Profile saved
+    </div>
+  );
 }
 
 export default function SettingsPage() {
@@ -76,8 +108,24 @@ export default function SettingsPage() {
   const completeMilestone = useActivityStore((s) => s.completeMilestone);
   const resetMilestone = useActivityStore((s) => s.resetMilestone);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showSavedToast, setShowSavedToast] = useState(false);
+  const [saveTimer, setSaveTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
 
-  const completeness = profileCompleteness(profile);
+  const { score: completeness, filled, total } = profileCompleteness(profile);
+
+  function handleProfileChange(partial: Partial<UserProfile>) {
+    setProfile(partial);
+    if (saveTimer) clearTimeout(saveTimer);
+    const t = setTimeout(() => setShowSavedToast(true), 400);
+    setSaveTimer(t);
+  }
+
+  useEffect(() => {
+    if (showSavedToast) {
+      const t = setTimeout(() => setShowSavedToast(false), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [showSavedToast]);
 
   function clearChatHistory() {
     clearMessages();
@@ -85,8 +133,7 @@ export default function SettingsPage() {
   }
 
   function exportProfile() {
-    const data = JSON.stringify(profile, null, 2);
-    const blob = new Blob([data], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(profile, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -100,27 +147,67 @@ export default function SettingsPage() {
     const next = current.includes(item)
       ? current.filter((c) => c !== item)
       : [...current, item];
-    setProfile({ complianceFocus: next });
+    handleProfileChange({ complianceFocus: next });
   }
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-zinc-950">
       <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6">
-        <div className="mb-8 flex items-center justify-between">
+
+        {/* Page header */}
+        <div className="mb-8">
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-3xl">
             Settings
           </h1>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            Manage your export profile, appearance, and preferences.
+          </p>
         </div>
 
-        {/* Appearance */}
+        {/* Profile completeness banner */}
+        <div className="mb-8 rounded-xl bg-white p-5 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                  Profile completeness
+                </p>
+                <span className={cn(
+                  "text-sm font-bold tabular-nums",
+                  completeness === 100 ? "text-india-green-600 dark:text-india-green-400" : "text-saffron-600 dark:text-saffron-400"
+                )}>
+                  {completeness}%
+                </span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-all duration-700",
+                    completeness === 100 ? "bg-india-green-500" : "bg-saffron-500"
+                  )}
+                  style={{ width: `${completeness}%` }}
+                />
+              </div>
+              <p className="mt-1.5 text-xs text-zinc-400">
+                {filled} of {total} fields filled — a complete profile gives better AI recommendations.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={exportProfile}
+              className="shrink-0 flex items-center gap-1.5 rounded-lg border border-zinc-300 px-3 py-2 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Export JSON
+            </button>
+          </div>
+        </div>
+
+        {/* ── Appearance ───────────────────────────────────────── */}
         <section className="mb-8">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">
-            Appearance
-          </h2>
+          <SectionHeading icon={Palette} title="Appearance" />
           <div className="rounded-xl bg-white p-5 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
-            <label className="mb-3 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
-              Theme
-            </label>
+            <label className="mb-3 block text-sm font-medium text-zinc-900 dark:text-zinc-50">Theme</label>
             <div className="flex gap-2">
               {themeOptions.map((opt) => {
                 const Icon = opt.icon;
@@ -132,7 +219,7 @@ export default function SettingsPage() {
                     className={cn(
                       "flex flex-1 items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition-colors",
                       active
-                        ? "border-zinc-900 bg-zinc-900 text-white dark:border-white dark:bg-white dark:text-zinc-900"
+                        ? "border-saffron-500 bg-saffron-500 text-white"
                         : "border-zinc-300 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
                     )}
                   >
@@ -145,53 +232,30 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* Profile */}
+        {/* ── Export Profile ───────────────────────────────────── */}
         <section className="mb-8">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
-              Export Profile
-            </h2>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <div className="h-1.5 w-28 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
-                  <div
-                    className="h-full rounded-full bg-saffron-500 transition-all duration-500"
-                    style={{ width: `${completeness}%` }}
-                  />
-                </div>
-                <span className="text-xs font-medium text-zinc-500">{completeness}% complete</span>
-              </div>
-              <button
-                type="button"
-                onClick={exportProfile}
-                className="flex items-center gap-1.5 rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
-              >
-                <Download className="h-3.5 w-3.5" />
-                Export JSON
-              </button>
-            </div>
-          </div>
+          <SectionHeading icon={User} title="Export Profile" subtitle="Used to personalise AI responses and scheme recommendations" />
           <div className="rounded-xl bg-white p-5 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
             <div className="space-y-5">
+
               {/* Business name */}
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                  <Building2 className="h-3.5 w-3.5 text-zinc-400" />
                   Business name
                 </label>
                 <input
                   type="text"
                   value={profile.businessName}
-                  onChange={(e) => setProfile({ businessName: e.target.value })}
+                  onChange={(e) => handleProfileChange({ businessName: e.target.value })}
                   placeholder="Your business name"
-                  className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+                  className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-saffron-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-500"
                 />
               </div>
 
               {/* Business type */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
-                  Business type
-                </label>
+                <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-zinc-50">Business type</label>
                 <div className="grid grid-cols-2 gap-2">
                   {businessTypeOptions.map((opt) => {
                     const active = profile.businessType === opt.value;
@@ -199,7 +263,7 @@ export default function SettingsPage() {
                       <button
                         key={opt.value}
                         type="button"
-                        onClick={() => setProfile({ businessType: active ? "" : opt.value })}
+                        onClick={() => handleProfileChange({ businessType: active ? "" : opt.value })}
                         className={cn(
                           "rounded-lg border px-3 py-2.5 text-left transition-colors",
                           active
@@ -219,53 +283,52 @@ export default function SettingsPage() {
 
               {/* Primary sector */}
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
-                  Primary sector
-                </label>
+                <label className="mb-1.5 block text-sm font-medium text-zinc-900 dark:text-zinc-50">Primary sector</label>
                 <select
                   value={profile.sector}
-                  onChange={(e) => setProfile({ sector: e.target.value })}
-                  className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
+                  onChange={(e) => handleProfileChange({ sector: e.target.value })}
+                  className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 focus:border-saffron-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
                 >
                   {sectorOptions.map((s) => (
-                    <option key={s} value={s}>
-                      {s || "Select a sector"}
-                    </option>
+                    <option key={s} value={s}>{s || "Select a sector"}</option>
                   ))}
                 </select>
               </div>
 
               {/* Location */}
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                  <MapPin className="h-3.5 w-3.5 text-zinc-400" />
                   Location
                 </label>
                 <input
                   type="text"
                   value={profile.location}
-                  onChange={(e) => setProfile({ location: e.target.value })}
+                  onChange={(e) => handleProfileChange({ location: e.target.value })}
                   placeholder="City, State"
-                  className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+                  className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-saffron-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-500"
                 />
               </div>
 
               {/* Export products */}
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                  <Package className="h-3.5 w-3.5 text-zinc-400" />
                   Export products
                 </label>
                 <input
                   type="text"
                   value={profile.exportProducts}
-                  onChange={(e) => setProfile({ exportProducts: e.target.value })}
+                  onChange={(e) => handleProfileChange({ exportProducts: e.target.value })}
                   placeholder="e.g. black pepper, turmeric, spice mixes"
-                  className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-500"
+                  className="h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-saffron-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-500"
                 />
               </div>
 
               {/* Preferred currency */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                <label className="mb-2 flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                  <Banknote className="h-3.5 w-3.5 text-zinc-400" />
                   Preferred invoice currency
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -275,7 +338,7 @@ export default function SettingsPage() {
                       <button
                         key={cur}
                         type="button"
-                        onClick={() => setProfile({ preferredCurrency: cur })}
+                        onClick={() => handleProfileChange({ preferredCurrency: cur })}
                         className={cn(
                           "rounded-full px-3 py-1 text-xs font-semibold transition-colors",
                           active
@@ -292,7 +355,8 @@ export default function SettingsPage() {
 
               {/* Target markets */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                <label className="mb-2 flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                  <Globe2 className="h-3.5 w-3.5 text-zinc-400" />
                   Target markets
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -306,7 +370,7 @@ export default function SettingsPage() {
                           const updated = selected
                             ? profile.targetMarkets.filter((c) => c !== dest.code)
                             : [...profile.targetMarkets, dest.code];
-                          setProfile({ targetMarkets: updated });
+                          handleProfileChange({ targetMarkets: updated });
                         }}
                         className={cn(
                           "rounded-full px-3 py-1 text-xs font-medium transition-colors",
@@ -324,9 +388,7 @@ export default function SettingsPage() {
 
               {/* Export stage */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
-                  Export stage
-                </label>
+                <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-zinc-50">Export stage</label>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {(["planning", "registered", "first-shipment", "scaling"] as ExportStage[]).map((stage) => {
                     const labels: Record<ExportStage, string> = {
@@ -346,7 +408,7 @@ export default function SettingsPage() {
                       <button
                         key={stage}
                         type="button"
-                        onClick={() => setProfile({ exportStage: active ? "" : stage })}
+                        onClick={() => handleProfileChange({ exportStage: active ? "" : stage })}
                         className={cn(
                           "rounded-lg border px-3 py-2.5 text-left transition-colors",
                           active
@@ -368,34 +430,39 @@ export default function SettingsPage() {
 
               {/* Registration status */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                <label className="mb-2 flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-zinc-50">
+                  <ShieldCheck className="h-3.5 w-3.5 text-zinc-400" />
                   Registration status
                 </label>
                 <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={profile.hasIEC}
-                      onChange={(e) => setProfile({ hasIEC: e.target.checked })}
-                      className="h-4 w-4 rounded border-zinc-300 text-saffron-500 focus:ring-saffron-500"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">I have an IEC code</p>
-                      <p className="text-[10px] text-zinc-500">Import Export Code registered with DGFT</p>
-                    </div>
-                  </label>
-                  <label className="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={profile.isoVerified}
-                      onChange={(e) => setProfile({ isoVerified: e.target.checked })}
-                      className="h-4 w-4 rounded border-zinc-300 text-saffron-500 focus:ring-saffron-500"
-                    />
-                    <div>
-                      <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">ISO certified</p>
-                      <p className="text-[10px] text-zinc-500">ISO 9001, ISO 22000, or other relevant certification</p>
-                    </div>
-                  </label>
+                  {[
+                    {
+                      key: "hasIEC" as const,
+                      label: "I have an IEC code",
+                      desc: "Import Export Code registered with DGFT",
+                    },
+                    {
+                      key: "isoVerified" as const,
+                      label: "ISO certified",
+                      desc: "ISO 9001, ISO 22000, or other relevant certification",
+                    },
+                  ].map(({ key, label, desc }) => (
+                    <label
+                      key={key}
+                      className="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={profile[key]}
+                        onChange={(e) => handleProfileChange({ [key]: e.target.checked })}
+                        className="h-4 w-4 rounded border-zinc-300 accent-saffron-500"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{label}</p>
+                        <p className="text-[10px] text-zinc-500">{desc}</p>
+                      </div>
+                    </label>
+                  ))}
                 </div>
               </div>
 
@@ -430,18 +497,13 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* Export Milestones */}
+        {/* ── Export Milestones ─────────────────────────────────── */}
         <section className="mb-8">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">
-            Export Milestones
-          </h2>
+          <SectionHeading icon={Award} title="Export Milestones" subtitle="Track your export journey — click to mark complete" />
           <div className="rounded-xl bg-white ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800 overflow-hidden">
-            <p className="px-5 py-3 text-xs text-zinc-500 border-b border-zinc-100 dark:border-zinc-800">
-              Track your export journey. Click to mark a milestone complete.
-            </p>
             <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {milestones.map((m) => (
-                <div key={m.id} className="flex items-center gap-3 px-5 py-3">
+                <div key={m.id} className="flex items-center gap-3 px-5 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                   <button
                     type="button"
                     onClick={() =>
@@ -471,13 +533,11 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* Chat */}
+        {/* ── Chat ─────────────────────────────────────────────── */}
         <section className="mb-8">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">
-            Chat
-          </h2>
+          <SectionHeading icon={MessageSquare} title="Chat" />
           <div className="rounded-xl bg-white p-5 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
                   Clear conversation history
@@ -487,7 +547,7 @@ export default function SettingsPage() {
                 </p>
               </div>
               {showClearConfirm ? (
-                <div className="flex gap-2">
+                <div className="flex shrink-0 gap-2">
                   <button
                     onClick={() => setShowClearConfirm(false)}
                     className="rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
@@ -504,7 +564,7 @@ export default function SettingsPage() {
               ) : (
                 <button
                   onClick={() => setShowClearConfirm(true)}
-                  className="flex items-center gap-1.5 rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40"
+                  className="shrink-0 flex items-center gap-1.5 rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   Clear history
@@ -514,28 +574,50 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* About */}
+        {/* ── About ─────────────────────────────────────────────── */}
         <section>
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">
-            About
-          </h2>
-          <div className="rounded-xl bg-white p-5 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
-            <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
-              <p>
-                <span className="font-medium text-zinc-900 dark:text-zinc-50">India2World</span>{" "}
-                v0.3.0
-              </p>
-              <p>
-                AI-powered export workspace for Indian businesses. Built with Next.js and Claude.
-              </p>
-              <p className="text-xs">
-                Always confirm duty rates, scheme terms, and regulations with DGFT, ICEGATE, or a
-                licensed customs broker before acting.
-              </p>
+          <SectionHeading icon={Info} title="About" />
+          <div className="rounded-xl bg-white p-5 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">India2World</p>
+                <p className="text-xs text-zinc-500">Version 0.3.0</p>
+              </div>
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-saffron-50 dark:bg-saffron-500/10">
+                <Globe2 className="h-5 w-5 text-saffron-500" />
+              </div>
             </div>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              AI-powered export workspace for Indian businesses. Built with Next.js and Claude.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { label: "DGFT", href: "https://dgft.gov.in", desc: "Export licences & schemes" },
+                { label: "ICEGATE", href: "https://icegate.gov.in", desc: "Customs & HS codes" },
+                { label: "Export.gov.in", href: "https://www.export.gov.in", desc: "Exporter resources" },
+                { label: "RBI FEMA", href: "https://www.rbi.org.in", desc: "Foreign exchange rules" },
+              ].map(({ label, href, desc }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col gap-0.5 rounded-lg border border-zinc-200 px-3 py-2.5 text-xs transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                >
+                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">{label}</span>
+                  <span className="text-zinc-400">{desc}</span>
+                </a>
+              ))}
+            </div>
+            <p className="text-xs text-zinc-400 border-t border-zinc-100 dark:border-zinc-800 pt-3">
+              Always confirm duty rates, scheme terms, and regulations with DGFT, ICEGATE, or a licensed customs broker before acting.
+            </p>
           </div>
         </section>
+
       </div>
+
+      <AutoSaveToast show={showSavedToast} />
     </div>
   );
 }

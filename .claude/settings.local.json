@@ -34,7 +34,9 @@
       "Bash(node -e \"require\\('dotenv/config'\\); console.log\\('ANTHROPIC:', process.env.ANTHROPIC_API_KEY?.slice\\(0,20\\)\\); console.log\\('GROQ:', process.env.GROQ_API_KEY?.slice\\(0,15\\)\\); console.log\\('GEMINI:', process.env.GEMINI_API_KEY?.slice\\(0,15\\)\\); console.log\\('TAVILY:', process.env.TAVILY_API_KEY?.slice\\(0,15\\)\\);\")",
       "Bash(node -e \"const c = require\\('@clerk/express'\\); console.log\\(Object.keys\\(c\\).join\\('\\\\n'\\)\\)\")",
       "Bash(node -e \"const n=require\\('next/package.json'\\); console.log\\(n.version\\)\")",
-      "Bash(npm uninstall *)"
+      "Bash(npm uninstall *)",
+      "Bash(Remove-Item *)",
+      "PowerShell(Remove-Item *)"
     ]
   }
 }

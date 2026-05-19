@@ -283,7 +283,7 @@ export default function SchemesPage() {
                       </div>
                       <div className="mt-4 flex flex-wrap gap-3">
                         <Link
-                          href={`/dashboard/chat?q=Tell me more about the ${scheme.shortName} scheme — eligibility, benefits, and how to claim.`}
+                          href={`/dashboard/chat?q=${encodeURIComponent(`Tell me more about the ${scheme.shortName} scheme — eligibility, benefits, and how to claim.`)}`}
                           className="inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
                         >
                           <MessageSquare className="h-3.5 w-3.5" />

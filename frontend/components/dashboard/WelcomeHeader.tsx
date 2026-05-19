@@ -135,7 +135,7 @@ export function WelcomeHeader() {
             Complete your profile for personalized export guidance and scheme recommendations.
           </p>
           <Link
-            href="/settings"
+            href="/dashboard/settings"
             className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-saffron-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-saffron-600"
           >
             Set up your profile

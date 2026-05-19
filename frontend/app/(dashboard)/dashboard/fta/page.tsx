@@ -315,7 +315,7 @@ Focus on: (1) Certificate of Origin logistics, (2) timing/process, and (3) buyer
 
             <div className="flex gap-3">
               <Link
-                href={`/dashboard/chat?q=How do I get a Certificate of Origin for ${rateData.fta}?`}
+                href={`/dashboard/chat?q=${encodeURIComponent(`How do I get a Certificate of Origin for ${rateData.fta}?`)}`}
                 className="rounded-lg bg-saffron-500 px-4 py-2 text-sm font-medium text-white hover:bg-saffron-600"
               >
                 Ask AI about {rateData.fta} CoO
@@ -340,7 +340,7 @@ Focus on: (1) Certificate of Origin logistics, (2) timing/process, and (3) buyer
                 We don&apos;t have duty rates for Chapter {hsChapter} in our static table yet, but the FTA is active. Ask the AI for an estimate, then verify with DGFT.
               </p>
               <Link
-                href={`/dashboard/chat?q=What is the ${ftaInfo.fta} preferential duty rate for HS Chapter ${hsChapter} in ${dest?.name}?`}
+                href={`/dashboard/chat?q=${encodeURIComponent(`What is the ${ftaInfo.fta} preferential duty rate for HS Chapter ${hsChapter} in ${dest?.name}?`)}`}
                 className="mt-4 inline-block rounded-lg bg-saffron-500 px-4 py-2 text-sm font-medium text-white hover:bg-saffron-600"
               >
                 Ask AI for duty rate estimate
@@ -356,7 +356,7 @@ Focus on: (1) Certificate of Origin logistics, (2) timing/process, and (3) buyer
               No FTA data found for this combination. This country may not have an active FTA with India for this product category.
             </p>
             <Link
-              href={`/dashboard/chat?q=Does India have an FTA with ${dest?.name} for Chapter ${hsChapter} goods?`}
+              href={`/dashboard/chat?q=${encodeURIComponent(`Does India have an FTA with ${dest?.name} for Chapter ${hsChapter} goods?`)}`}
               className="mt-3 inline-block text-sm font-medium text-saffron-600 hover:underline dark:text-saffron-400"
             >
               Ask AI about FTA coverage →

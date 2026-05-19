@@ -39,7 +39,6 @@ export function CommandPalette({ open, onClose }: Props) {
 
   useEffect(() => {
     if (open) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuery("");
       setActiveIdx(0);
       setTimeout(() => inputRef.current?.focus(), 10);
@@ -47,7 +46,6 @@ export function CommandPalette({ open, onClose }: Props) {
   }, [open]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveIdx(0);
   }, [query]);
 

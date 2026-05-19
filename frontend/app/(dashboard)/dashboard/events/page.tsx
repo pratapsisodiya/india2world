@@ -367,7 +367,7 @@ Be specific and actionable for Indian exporters.`,
                 {!selectedEvent && (
                   <div className="flex flex-col items-center justify-center py-16 text-zinc-400">
                     <Sparkles className="h-8 w-8 opacity-30 mb-2" />
-                    <p className="text-xs text-center">Select an event and click "Get AI prep checklist" to get a personalised 30-day action plan.</p>
+                    <p className="text-xs text-center">Select an event and click &ldquo;Get AI prep checklist&rdquo; to get a personalised 30-day action plan.</p>
                   </div>
                 )}
                 {prepLoading && !prepAdvice && (

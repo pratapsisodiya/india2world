@@ -292,7 +292,7 @@ function ExportPipeline() {
           Export journey
         </span>
         <Link
-          href="/settings"
+          href="/dashboard/settings"
           className="ml-auto text-[10px] font-medium text-zinc-400 hover:text-saffron-600 dark:hover:text-saffron-400 transition-colors"
         >
           Update stage →
@@ -347,9 +347,13 @@ function ExportPipeline() {
 
 function ComplianceTracker() {
   const profile = useUserStore((s) => s.profile);
-  // Use score as a rough proxy for how complete the compliance checklist is
-  const score = profile.readinessScore ?? 0;
-  const completed = Math.round((score / 100) * COMPLIANCE_ITEMS.length);
+  // Count completed items based on actual profile state
+  let completed = 0;
+  if (profile.hasIEC) completed++; // IEC
+  if (profile.sector) completed++; // GST (assumed with sector)
+  if (profile.exportStage && profile.exportStage !== "planning") completed++; // RCMC (assumed if past planning)
+  if (profile.exportStage === "scaling") completed++; // Shipping Bill (assumed if scaling)
+  if (profile.isoVerified) completed++; // AD Code (ISO as proxy)
 
   return (
     <div className="overflow-hidden rounded-2xl bg-white ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
@@ -450,7 +454,7 @@ function MarketOpportunitySnapshot() {
         {opportunities.map((opp) => (
           <Link
             key={opp.market}
-            href={`/dashboard/chat?q=Tell me about exporting to ${opp.market} from India`}
+            href={`/dashboard/chat?q=${encodeURIComponent(`Tell me about exporting to ${opp.market} from India`)}`}
             className="group flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/60"
           >
             <span className="text-2xl">{opp.flag}</span>
@@ -561,7 +565,7 @@ export default function DashboardPage() {
                 <span className="w-20 text-sm font-semibold text-zinc-900 dark:text-zinc-50">{m.market}</span>
                 <span className="flex-1 text-sm text-zinc-500 dark:text-zinc-400">{m.note}</span>
                 <Link
-                  href={`/dashboard/chat?q=Tell me about exporting to ${m.market} from India`}
+                  href={`/dashboard/chat?q=${encodeURIComponent(`Tell me about exporting to ${m.market} from India`)}`}
                   className="shrink-0 rounded-lg bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700 transition-colors hover:bg-saffron-100 hover:text-saffron-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-saffron-900/30 dark:hover:text-saffron-400"
                 >
                   Ask AI
@@ -658,7 +662,7 @@ export default function DashboardPage() {
             {sectors.map((s) => (
               <Link
                 key={s.title}
-                href={`/dashboard/chat?q=I want to export ${s.title.toLowerCase()} from India. What do I need to know?`}
+                href={`/dashboard/chat?q=${encodeURIComponent(`I want to export ${s.title.toLowerCase()} from India. What do I need to know?`)}`}
                 className="flex flex-col items-center gap-2 rounded-xl bg-white p-4 text-center ring-1 ring-zinc-200 transition-all hover:-translate-y-0.5 hover:shadow-sm hover:ring-zinc-300 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:ring-zinc-700"
               >
                 <span className="text-2xl">{s.emoji}</span>

@@ -19,6 +19,7 @@ import hsClassifierRouter from "./features/hsClassifier/hsClassifierRouter.js";
 import userRouter from "./features/user/userRouter.js";
 import buyerFinderRouter from "./features/buyerFinder/buyerFinderRouter.js";
 import docGeneratorRouter from "./features/docGenerator/docGeneratorRouter.js";
+import complianceRouter from "./features/compliance/complianceRouter.js";
 import { runMigrations } from "./config/db.js";
 
 const app = express();
@@ -69,7 +70,7 @@ app.get("/", (_req, res) => {
     version: "0.3.0",
     features: {
       chat: !!(ENV.OPENAI_API_KEY || ENV.GEMINI_API_KEY),
-      agent: !!(ENV.OPENAI_API_KEY && ENV.TAVILY_API_KEY),
+      agent: !!((ENV.OPENAI_API_KEY || ENV.GEMINI_API_KEY) && ENV.TAVILY_API_KEY),
       news: !!ENV.TAVILY_API_KEY,
       schemeMatcher: !!ENV.OPENAI_API_KEY,
       hsClassifier: !!ENV.OPENAI_API_KEY,
@@ -107,6 +108,7 @@ app.use(hsClassifierRouter);
 app.use(userRouter);
 app.use(buyerFinderRouter);
 app.use(docGeneratorRouter);
+app.use(complianceRouter);
 
 // ── Error handlers (must be last) ────────────────────────────────────────────
 app.use(notFoundHandler);

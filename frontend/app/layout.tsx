@@ -54,27 +54,18 @@ export const metadata: Metadata = {
     title: "India2World — Export OS for Indian Businesses",
     description:
       "AI-powered export workspace: IEC, schemes, HS codes, FTA savings, compliance — tailored to your product and market.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "India2World — Export OS for Indian Businesses",
-      },
-    ],
+    images: [],
   },
   twitter: {
     card: "summary_large_image",
     title: "India2World — Export OS for Indian Businesses",
     description:
       "AI-powered export workspace for Indian businesses. Navigate IEC, government schemes, FTA savings, and compliance.",
-    images: ["/og-image.png"],
+    images: [],
     creator: "@india2world",
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    icon: "/favicon.svg",
   },
   manifest: "/site.webmanifest",
 };

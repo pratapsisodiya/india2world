@@ -190,7 +190,7 @@ router.post("/api/user/sessions", requireAuth, async (req: Request, res: Respons
       `INSERT INTO chat_sessions (id, user_id, title, provider)
        VALUES ($1, $2, $3, $4)
        ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, updated_at = NOW()`,
-      [id, userId, title ?? "Untitled", provider ?? "claude"]
+      [id, userId, title ?? "Untitled", provider ?? "openai"]
     );
     res.json({ ok: true });
   } catch (err) {

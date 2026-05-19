@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { globalGetToken } from "./user";
 
 export type Role = "user" | "assistant";
 
@@ -66,6 +67,24 @@ function deriveTitle(messages: ChatMessage[]): string {
   return text.length > 55 ? text.slice(0, 52) + "…" : text;
 }
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+
+async function pushSession(id: string, title: string) {
+  if (typeof window === 'undefined') return;
+  if (!globalGetToken) return;
+  const token = await globalGetToken();
+  if (!token) return;
+
+  await fetch(`${BACKEND_URL}/api/user/sessions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ id, title }),
+  }).catch(() => {});
+}
+
 export const useChatStore = create<ChatState>()(
   persist(
     (set, get) => ({
@@ -100,15 +119,18 @@ export const useChatStore = create<ChatState>()(
         const { messages, threads } = get();
         if (messages.length === 0) return null;
         const id = crypto.randomUUID();
+        const derivedTitle = title ?? deriveTitle(messages);
         const thread: ChatThread = {
           id,
-          title: title ?? deriveTitle(messages),
+          title: derivedTitle,
           messages: [...messages],
           createdAt: messages[0]?.ts ?? Date.now(),
           updatedAt: Date.now(),
           pinned: false,
         };
         set({ threads: [thread, ...threads].slice(0, 30) });
+        
+        pushSession(id, derivedTitle);
         return id;
       },
 
@@ -126,10 +148,12 @@ export const useChatStore = create<ChatState>()(
           threads: s.threads.map((t) => (t.id === id ? { ...t, pinned } : t)),
         })),
 
-      renameThread: (id, title) =>
+      renameThread: (id, title) => {
         set((s) => ({
           threads: s.threads.map((t) => (t.id === id ? { ...t, title } : t)),
-        })),
+        }));
+        pushSession(id, title);
+      },
     }),
     {
       name: "india2world-chat",

@@ -397,13 +397,16 @@ function ChatInner() {
     : DEFAULT_STARTER_SUGGESTIONS;
 
   const [provider, setProvider] = useState<"openai" | "gemini">("openai");
-  const [researchMode, setResearchMode] = useState(false);
+  const [researchMode, setResearchMode] = useState(() => {
+    try { return localStorage.getItem("india2world-research-mode") === "true"; } catch { return false; }
+  });
   const [input, setInput] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showThreads, setShowThreads] = useState(false);
   const [savedNotice, setSavedNotice] = useState(false);
   const autoSent = useRef(false);
+  const initialQueryRef = useRef(initialQuery);
 
   const {
     startStream,
@@ -416,10 +419,6 @@ function ChatInner() {
     setError,
   } = useSSE();
 
-  useEffect(() => {
-    const stored = localStorage.getItem("india2world-research-mode");
-    if (stored === "true") setResearchMode(true);
-  }, []);
   useEffect(() => {
     localStorage.setItem("india2world-research-mode", String(researchMode));
   }, [researchMode]);
@@ -500,19 +499,32 @@ function ChatInner() {
         },
       });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [messages, streaming, profile, provider, researchMode, logActivity, startStream, addMessage]
+    [messages, streaming, profile, provider, researchMode, logActivity, startStream, addMessage, setInput]
   );
 
-  useEffect(() => { markSeen(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        markSeen();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    if (document.visibilityState === 'visible') {
+      markSeen();
+    }
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [markSeen]);
 
   useEffect(() => {
-    if (initialQuery && !autoSent.current && messages.length === 0) {
-      autoSent.current = true;
-      sendMessage(initialQuery);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    initialQueryRef.current = initialQuery;
   }, [initialQuery]);
+
+  useEffect(() => {
+    if (initialQueryRef.current && !autoSent.current && messages.length === 0) {
+      autoSent.current = true;
+      sendMessage(initialQueryRef.current);
+    }
+  }, [sendMessage, messages.length]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -838,9 +850,6 @@ function ChatInner() {
     </div>
   );
 }
-
-// Suppress unused import — Pin is used in ThreadItem via JSX
-void Pin;
 
 function ChatFallback() {
   return (

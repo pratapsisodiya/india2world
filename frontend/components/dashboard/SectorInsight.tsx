@@ -12,7 +12,7 @@ interface SectorInfo {
 }
 
 const SECTOR_INSIGHTS: Record<string, SectorInfo> = {
-  "Textiles & apparel": {
+  "Textiles & Apparel": {
     hsChapters: "50-63",
     keySchemes: ["RoSCTL", "RoDTEP", "EPCG"],
     topMarkets: ["USA", "UAE", "UK"],
@@ -24,37 +24,37 @@ const SECTOR_INSIGHTS: Record<string, SectorInfo> = {
     topMarkets: ["USA", "UK", "Germany"],
     tip: "EPCH membership unlocks subsidized trade fair participation under MAI.",
   },
-  "Spices & agri": {
+  "Spices & Agriculture": {
     hsChapters: "07-10, 09",
     keySchemes: ["RoDTEP", "TMA", "Advance Authorisation"],
     topMarkets: ["USA", "UAE", "China"],
     tip: "FSSAI + Spices Board registration are mandatory — start these early.",
   },
-  "Gems & jewellery": {
+  "Gems & Jewellery": {
     hsChapters: "71",
     keySchemes: ["RoDTEP", "Star Export House", "Advance Authorisation"],
     topMarkets: ["UAE", "USA", "Hong Kong"],
     tip: "Kimberley Process Certificate is mandatory for rough diamond exports.",
   },
-  "Engineering goods": {
+  "Engineering Goods": {
     hsChapters: "72-73, 84-85",
     keySchemes: ["RoDTEP", "EPCG", "Interest Equalisation"],
     topMarkets: ["USA", "UAE", "Germany"],
     tip: "CE marking is required for EU markets — factor 3-6 months for certification.",
   },
-  "Pharma & life sciences": {
+  "Pharma & Life Sciences": {
     hsChapters: "30",
     keySchemes: ["RoDTEP", "Interest Equalisation", "EPCG"],
     topMarkets: ["USA", "UK", "South Africa"],
     tip: "WHO-GMP certification opens regulated markets — prioritize this early.",
   },
-  "IT & ITES services": {
+  "IT & ITES Services": {
     hsChapters: "N/A (services)",
     keySchemes: ["SEIS", "Interest Equalisation"],
     topMarkets: ["USA", "UK", "Singapore"],
     tip: "SEIS provides 5% duty credit scrips on net foreign exchange earned.",
   },
-  "Leather & footwear": {
+  "Leather & Footwear": {
     hsChapters: "41-42, 64",
     keySchemes: ["RoDTEP", "EPCG", "Interest Equalisation"],
     topMarkets: ["USA", "UK", "Germany"],
@@ -70,7 +70,7 @@ export function SectorInsight() {
       <div className="rounded-xl border border-dashed border-zinc-300 p-6 text-center dark:border-zinc-700">
         <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
           Set your business sector in{" "}
-          <Link href="/settings" className="text-saffron-600 underline dark:text-saffron-400">
+          <Link href="/dashboard/settings" className="text-saffron-600 underline dark:text-saffron-400">
             Settings
           </Link>{" "}
           to unlock targeted insights.
@@ -122,7 +122,7 @@ export function SectorInsight() {
       </div>
 
       <Link
-        href={`/dashboard/chat?q=I export ${sector.toLowerCase()} from India. What schemes, certifications, and markets should I focus on?`}
+        href={`/dashboard/chat?q=${encodeURIComponent(`I export ${sector.toLowerCase()} from India. What schemes, certifications, and markets should I focus on?`)}`}
         className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-saffron-600 transition-colors hover:text-saffron-700 dark:text-saffron-400 dark:hover:text-saffron-300"
       >
         Get AI guidance for your sector

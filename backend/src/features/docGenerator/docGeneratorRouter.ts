@@ -15,7 +15,7 @@ const DOC_LABELS: Record<string, string> = {
 
 function buildDocPrompt(data: ReturnType<typeof DocGeneratorRequestSchema.parse>): string {
   const label = DOC_LABELS[data.docType];
-  const totalValue = data.products.reduce((sum, p) => sum + p.quantity as unknown as number * p.unitPrice, 0);
+  const totalValue = data.products.reduce((sum, p) => sum + parseFloat(p.quantity) * p.unitPrice, 0);
   const currency = data.products[0]?.currency ?? "USD";
 
   const productLines = data.products

@@ -289,7 +289,7 @@ export default function BuyerFinderPage() {
                 {result.buyers.length} potential buyer{result.buyers.length !== 1 ? "s" : ""} found
               </h2>
               <div className="space-y-2">
-                {result.buyers.map((b, i) => <BuyerCard key={i} buyer={b} />)}
+                {result.buyers.map((b) => <BuyerCard key={b.companyName} buyer={b} />)}
               </div>
             </div>
 
@@ -298,8 +298,8 @@ export default function BuyerFinderPage() {
               <div className="rounded-xl bg-saffron-50 p-4 ring-1 ring-saffron-200 dark:bg-saffron-500/10 dark:ring-saffron-500/20">
                 <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-saffron-700 dark:text-saffron-400">Outreach Tips</h3>
                 <ul className="space-y-1.5">
-                  {result.outreachTips.map((tip, i) => (
-                    <li key={i} className="text-sm text-saffron-800 dark:text-saffron-300">• {tip}</li>
+                  {result.outreachTips.map((tip) => (
+                    <li key={tip} className="text-sm text-saffron-800 dark:text-saffron-300">• {tip}</li>
                   ))}
                 </ul>
               </div>

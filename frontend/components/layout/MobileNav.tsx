@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/cn";
 import { useUserStore } from "@/store/user";
+import { useClerk } from "@clerk/nextjs";
 
 const navGroups = [
   {
@@ -147,17 +148,7 @@ export function MobileNav({
 
             <div className="border-t border-zinc-200 p-4 dark:border-zinc-800">
               {profile.isLoggedIn ? (
-                <button
-                  onClick={() => {
-                    logout();
-                    onClose();
-                    router.push("/");
-                  }}
-                  className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Sign out
-                </button>
+                <MobileNavSignOut onClose={onClose} />
               ) : (
                 <div className="flex flex-col gap-2">
                   <Link
@@ -183,5 +174,28 @@ export function MobileNav({
         </>
       )}
     </AnimatePresence>
+  );
+}
+
+function MobileNavSignOut({ onClose }: { onClose: () => void }) {
+  const router = useRouter();
+  const { signOut } = useClerk();
+  const logout = useUserStore((s) => s.logout);
+
+  const handleSignOut = async () => {
+    logout();
+    onClose();
+    await signOut();
+    router.push("/");
+  };
+
+  return (
+    <button
+      onClick={handleSignOut}
+      className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+    >
+      <LogOut className="h-4 w-4" />
+      Sign out
+    </button>
   );
 }

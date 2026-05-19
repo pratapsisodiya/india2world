@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState, useCallback, useRef } from "react";
-import Link from "next/link";
 import { Copy, Check, Sparkles, X, Loader2 } from "lucide-react";
 import { HS_CHAPTERS } from "@/app/data/hsCodes";
 import { SearchInput } from "@/components/ui/SearchInput";
@@ -258,7 +257,7 @@ export default function HsCodesPage() {
                 {aiResult.clarificationNeeded && (
                   <p className="text-xs text-amber-700 dark:text-amber-400">💡 {aiResult.clarificationNeeded}</p>
                 )}
-                <p className="text-xs text-zinc-400">{aiResult.generalGuidance} — Verify at <Link href={aiResult.verifyAt} target="_blank" className="underline hover:text-zinc-600">{aiResult.verifyAt}</Link></p>
+                <p className="text-xs text-zinc-400">{aiResult.generalGuidance} — Verify at <a href="https://icegate.gov.in" target="_blank" rel="noopener noreferrer" className="underline hover:text-zinc-600">icegate.gov.in</a></p>
               </div>
             )}
           </div>

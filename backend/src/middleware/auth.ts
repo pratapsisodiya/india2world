@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "@clerk/express";
+import { verifyToken } from "@clerk/backend";
 import { ENV } from "../config/env.js";
 import { logger } from "../utils/logger.js";
 

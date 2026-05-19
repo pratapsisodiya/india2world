@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageSquare,
@@ -15,12 +15,12 @@ import {
   Sparkles,
   Zap,
   TrendingUp,
-  BookOpen,
+  Menu,
+  X,
 } from "lucide-react";
-import { Globe } from "@/components/ui/Globe";
-import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
+import { Footer } from "@/components/layout/Footer";
 
-/* ─── Data ─────────────────────────────────────────────────────────────────── */
+/* ─── Static Data Models ─────────────────────────────────────────────────── */
 
 const FEATURES = [
   {
@@ -28,54 +28,60 @@ const FEATURES = [
     icon: MessageSquare,
     label: "AI Export Chat",
     desc: "Ask anything — procedures, HS codes, target markets, govt schemes. Instant answers powered by Claude.",
-    color: "text-orange-400",
-    bg: "bg-orange-500/10",
-    border: "hover:border-orange-500/30",
+    color: "text-orange-500",
+    bg: "bg-orange-50/50 border-orange-100/50",
+    hoverBg: "hover:bg-orange-50/10 hover:border-orange-500/20",
+    span: "md:col-span-2", // Bento span asset
   },
   {
     href: "/dashboard/schemes/wizard",
     icon: Wand2,
     label: "Scheme Finder",
-    desc: "Answer 5 questions. Get matched to RoDTEP, EPCG, MEIS, duty drawback schemes you can actually claim.",
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-    border: "hover:border-emerald-500/30",
+    desc: "Answer 5 questions. Get matched to RoDTEP, EPCG, MEIS, duty drawback schemes you can claim.",
+    color: "text-emerald-500",
+    bg: "bg-emerald-50/50 border-emerald-100/50",
+    hoverBg: "hover:bg-emerald-50/10 hover:border-emerald-500/20",
+    span: "md:col-span-1",
   },
   {
     href: "/dashboard/hs-codes",
     icon: Hash,
     label: "HS Code Lookup",
     desc: "Search 500+ ITC-HS codes by product name or keyword. Know your classification before filing.",
-    color: "text-purple-400",
-    bg: "bg-purple-500/10",
-    border: "hover:border-purple-500/30",
+    color: "text-purple-500",
+    bg: "bg-purple-50/50 border-purple-100/50",
+    hoverBg: "hover:bg-purple-50/10 hover:border-purple-500/20",
+    span: "md:col-span-1",
   },
   {
     href: "/dashboard/fta",
     icon: Globe2,
     label: "FTA Calculator",
     desc: "Calculate preferential duty savings under CEPA, SAFTA, and bilateral FTAs. Know your tariff advantage.",
-    color: "text-blue-400",
-    bg: "bg-blue-500/10",
-    border: "hover:border-blue-500/30",
+    color: "text-blue-500",
+    bg: "bg-blue-50/50 border-blue-100/50",
+    hoverBg: "hover:bg-blue-50/10 hover:border-blue-500/20",
+    span: "md:col-span-2",
   },
   {
     href: "/dashboard/readiness",
     icon: Target,
     label: "Readiness Score",
     desc: "Take the 6-question export readiness assessment. Get a personalised gap analysis and action plan.",
-    color: "text-saffron-400",
-    bg: "bg-saffron-500/10",
-    border: "hover:border-saffron-500/30",
+    color: "text-amber-500",
+    bg: "bg-amber-50/50 border-amber-100/50",
+    hoverBg: "hover:bg-amber-50/10 hover:border-amber-500/20",
+    span: "md:col-span-1",
   },
   {
     href: "/dashboard/checklist",
     icon: FileText,
     label: "Document Checklist",
     desc: "Know exactly which documents you need for each product and destination before your first shipment.",
-    color: "text-rose-400",
-    bg: "bg-rose-500/10",
-    border: "hover:border-rose-500/30",
+    color: "text-rose-500",
+    bg: "bg-rose-50/50 border-rose-100/50",
+    hoverBg: "hover:bg-rose-50/10 hover:border-rose-500/20",
+    span: "md:col-span-2",
   },
 ];
 
@@ -84,28 +90,28 @@ const STEPS = [
     num: "01",
     icon: Target,
     title: "Assess Your Readiness",
-    desc: "Take the 6-question export readiness assessment. Get a score and personalised action plan in under 6 minutes.",
+    desc: "Take the 6-question export readiness assessment. Get a score and action plan in under 6 minutes.",
     time: "6 min",
   },
   {
     num: "02",
     icon: Wand2,
     title: "Find Matching Schemes",
-    desc: "Answer 5 questions and get matched to RoDTEP, EPCG, and other incentives you can actually claim.",
+    desc: "Answer 5 questions and get matched to RoDTEP, EPCG, and other incentives you can claim.",
     time: "5 min",
   },
   {
     num: "03",
     icon: Hash,
     title: "Verify HS Codes",
-    desc: "Search and verify ITC-HS codes for your product. Correct classification means correct duty rates.",
+    desc: "Search and verify ITC-HS codes for your product. Correct classification ensures correct duty rates.",
     time: "2 min",
   },
   {
     num: "04",
     icon: Globe2,
     title: "Calculate FTA Savings",
-    desc: "Calculate preferential duty savings under CEPA, ECTA, and bilateral FTAs. Know your tariff advantage.",
+    desc: "Calculate preferential duty savings under CEPA, ECTA, and bilateral FTAs. Know your advantage.",
     time: "3 min",
   },
   {
@@ -113,171 +119,276 @@ const STEPS = [
     icon: FileText,
     title: "Generate Checklist",
     desc: "Get a tailored document checklist — Invoice, BL, COO, FSSAI — for your product and destination.",
-    time: "instant",
+    time: "Instant",
   },
   {
     num: "06",
     icon: TrendingUp,
     title: "Start Your First Shipment",
-    desc: "With your readiness score, schemes, codes, and docs in place — you're ready to ship with confidence.",
-    time: "you're ready!",
+    desc: "With your readiness score, schemes, codes, and docs in place — you're ready to ship safely.",
+    time: "Ready",
   },
 ];
 
 const WHAT_YOU_BUILD = [
-  { label: "Export readiness profile", desc: "Know your gaps and next steps" },
-  { label: "Market intelligence dashboard", desc: "Target markets, FTA status, and tariffs" },
-  { label: "Scheme eligibility records", desc: "Matched incentives with claim steps" },
-  { label: "Compliance checklist", desc: "All docs for your product and market" },
-  { label: "Saved country profiles", desc: "Compare and track your target markets" },
+  { label: "Export readiness profile", desc: "Know your structural gaps and next operational steps" },
+  { label: "Market intelligence dashboard", desc: "Target markets, FTA status, and dynamic country tariffs" },
+  { label: "Scheme eligibility records", desc: "Matched incentives with step-by-step claim architectures" },
+  { label: "Compliance checklist", desc: "All legal document flows mapped to your custom product line" },
+  { label: "Saved country profiles", desc: "Compare and continuously track your target distribution zones" },
 ];
 
 const SECTORS = [
-  { emoji: "🧵", name: "Textiles & Apparel", hook: "RoSCTL, RCMC, buyer sourcing" },
-  { emoji: "🌶️", name: "Spices & Agriculture", hook: "Spices Board, APEDA, phytosanitary" },
-  { emoji: "💊", name: "Pharmaceuticals", hook: "CDSCO NOC, WHO-GMP, MRA markets" },
-  { emoji: "💎", name: "Gems & Jewellery", hook: "GJEPC, duty drawback, UAE exports" },
-  { emoji: "⚙️", name: "Engineering Goods", hook: "EPCG, BIS, EEPC membership" },
-  { emoji: "☕", name: "Tea & Coffee", hook: "Tea Board, Coffee Board, GI tags" },
-  { emoji: "👜", name: "Leather & Footwear", hook: "CLE, FDDI, EU compliance" },
-  { emoji: "💻", name: "IT & Software", hook: "SEIS, SEZ, service exports" },
+  { emoji: "🧵", name: "Textiles & Apparel", hook: "RoSCTL, RCMC, buyer tracking" },
+  { emoji: "🌶️", name: "Spices & Agriculture", hook: "APEDA, phytosanitary rules" },
+  { emoji: "💊", name: "Pharmaceuticals", hook: "CDSCO NOC, WHO-GMP protocols" },
+  { emoji: "💎", name: "Gems & Jewellery", hook: "GJEPC, duty drawback logs" },
+  { emoji: "⚙️", name: "Engineering Goods", hook: "EPCG authorizations, BIS" },
+  { emoji: "☕", name: "Tea & Coffee", hook: "Tea Board compliance, GI tags" },
+  { emoji: "👜", name: "Leather & Footwear", hook: "CLE tracking, EU directives" },
+  { emoji: "💻", name: "IT & Software", hook: "SEIS, SEZ infrastructure rules" },
 ];
 
 const FAQS = [
   {
     q: "Is India2World free to use?",
-    a: "Yes — core tools including AI Chat, HS Code Lookup, Scheme Finder, and Document Checklist are completely free. We plan to keep the essentials free for Indian SME exporters.",
+    a: "Yes. Core tools including AI Chat, HS Code Lookup, Scheme Finder, and Document Checklist are completely free. We maintain premium accessibility essentials for Indian SME exporters.",
   },
   {
     q: "Do I need an IEC number to use this platform?",
-    a: "No IEC is needed to use India2World. However, you will need an Import Export Code (IEC) from DGFT to actually export goods from India. Our AI can walk you through the IEC application process.",
+    a: "No IEC is needed to explore data layouts. However, you will need an Import Export Code (IEC) from DGFT to execute actual shipments. Our AI system can guide you directly through the active application portal process.",
   },
   {
     q: "How accurate is the AI guidance?",
-    a: "Our AI is trained on official DGFT, CBIC, APEDA, and Spices Board data and updated regularly. For critical decisions — final duty rates, scheme eligibility, and compliance filings — always verify with DGFT or a licensed customs broker.",
+    a: "Our models sync regularly with documentation from DGFT, CBIC, APEDA, and the Spices Board. For final filings, legal parameter checking, and binding customs duties, always perform a verify sequence with a licensed broker.",
   },
   {
     q: "Which export sectors does India2World support?",
-    a: "We cover 8 major sectors: Textiles & Apparel, Spices & Agriculture, Pharmaceuticals, Gems & Jewellery, Engineering Goods, Tea & Coffee, Leather & Footwear, and IT/Software services. Each sector has tailored AI guidance.",
-  },
-  {
-    q: "What is RoDTEP and can any exporter claim it?",
-    a: "RoDTEP (Remission of Duties and Taxes on Exported Products) refunds embedded taxes on exports that aren't rebated elsewhere. Most goods exporters with a valid IEC and shipping bill are eligible. Our Scheme Finder will tell you your exact rate.",
-  },
-  {
-    q: "Can I use India2World for services exports (IT/ITES)?",
-    a: "Yes. We cover SEIS (Service Exports from India Scheme), SEZ benefits for IT companies, and RBI FEMA compliance for service exporters. Ask the AI about 'SEIS eligibility' to get started.",
+    a: "We currently offer targeted infrastructure models across 8 major sectors, including Textiles, Pharmaceuticals, Agriculture, and Software services. Each configuration adapts dynamically to your custom chat prompt guidelines.",
   },
 ];
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" as const } },
-};
+/* ─── Framer Motion Configuration Variants ────────────────────────────────── */
+
 const containerVariants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
+  show: { transition: { staggerChildren: 0.04 } },
 };
 
-/* ─── Page ──────────────────────────────────────────────────────────────────── */
+const cardVariants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+};
+
+/* ─── Local Safety Component Shells (Ensures compilation) ───────────────── */
+
+function LocalGlobeFallback() {
+  return (
+    <div className="w-full h-full rounded-full border border-dashed border-zinc-200 bg-zinc-50/50 flex items-center justify-center relative overflow-hidden group">
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.05), transparent)' }} />
+      <Globe2 className="h-16 w-16 text-zinc-300 animate-spin [animation-duration:40s]" />
+    </div>
+  );
+}
+
+function LocalCounterFallback({ value, suffix }: { value: number; suffix?: string }) {
+  return <span>{value}{suffix}</span>;
+}
+
+/* ─── Main Structural Workspace Component ─────────────────────────────────── */
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Monitor scroll for premium layout sticky adjustments
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Safe UI Anchor Execution
+  const handleScrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      const offset = 80; // Offset accounts perfectly for sticky header heights
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen bg-[#FAFAFA] font-sans text-zinc-900 antialiased selection:bg-orange-50 selection:text-orange-900">
+      
+      {/* ── Minimal Tricolor Line Accent ────────────────────────────────── */}
+      <div className="flex h-px w-full shrink-0 z-50 relative">
+        <div className="w-1/3 bg-[#FF9933]" />
+        <div className="w-1/3 bg-zinc-200" />
+        <div className="w-1/3 bg-[#138808]" />
+      </div>
 
-      {/* ── Tricolor stripe ──────────────────────────────────────────────── */}
-      <div
-        className="h-0.75 w-full shrink-0"
-        style={{
-          background:
-            "linear-gradient(to right, #FF9933 33.333%, #ffffff 33.333% 66.666%, #138808 66.666%)",
-        }}
-      />
-
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[92vh] items-center overflow-hidden bg-zinc-950">
-        {/* Ambient glows */}
-        <div className="pointer-events-none absolute -left-40 -top-40 h-150 w-150 rounded-full bg-saffron-500/8 blur-[130px]" />
-        <div className="pointer-events-none absolute -bottom-40 -right-40 h-125 w-125 rounded-full bg-india-green-500/6 blur-[110px]" />
-        {/* Dot grid */}
-        <div className="pointer-events-none absolute inset-0 bg-dot-grid-dark" />
-
-        <div className="relative mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-          <div className="grid items-center gap-14 lg:grid-cols-2">
-
-            {/* Left — copy */}
-            <motion.div
-              initial={{ opacity: 0, y: 44 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.75, ease: "easeOut" }}
-              className="order-2 flex flex-col gap-7 lg:order-1"
-            >
-              {/* Badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.88 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.4 }}
-                className="inline-flex w-fit items-center gap-2 rounded-full border border-saffron-500/30 bg-saffron-500/10 px-3.5 py-1.5 text-xs font-semibold text-saffron-400 backdrop-blur-sm"
+      {/* ── Premium High-Performance Interactive Navigation ──────────────── */}
+      <nav className={`sticky top-0 z-50 w-full border-b transition-all duration-200 px-6 py-3.5 lg:px-12 ${
+        scrolled 
+          ? "border-zinc-200/80 bg-white/95 backdrop-blur-md shadow-sm shadow-zinc-200/20" 
+          : "border-zinc-200/60 bg-white/95 backdrop-blur-md"
+      }`}>
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5 text-base font-semibold tracking-tight text-zinc-950 focus:outline-none focus:ring-2 focus:ring-orange-500/20 rounded-md p-0.5 transition-opacity hover:opacity-90">
+            <Globe2 className="h-4.5 w-4.5 text-orange-500 stroke-2" />
+            <span>India2World</span>
+          </Link>
+          
+          {/* Desktop Links - Optimized with Higher Baseline Contrast */}
+          <div className="hidden md:flex items-center gap-8 text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-600">
+            {[
+              { label: "Modules", id: "features" },
+              { label: "Journey", id: "how-it-works" },
+              { label: "Sectors", id: "sectors" },
+              { label: "Documentation", id: "faq" }
+            ].map((item) => (
+              <a 
+                key={item.id}
+                href={`#${item.id}`} 
+                onClick={(e) => handleScrollToSection(e, item.id)} 
+                className="relative py-1.5 transition-colors hover:text-zinc-950 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:scale-x-0 after:bg-orange-500 after:transition-transform after:duration-200 hover:after:scale-x-100"
               >
-                <Sparkles className="h-3.5 w-3.5" />
-                Powered by Claude AI
-              </motion.div>
+                {item.label}
+              </a>
+            ))}
+          </div>
 
-              {/* Headline */}
-              <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-6xl lg:text-7xl">
-                Take India<br />
-                <span className="bg-linear-to-r from-saffron-400 via-orange-400 to-saffron-500 bg-clip-text text-transparent">
-                  to the World
-                </span>
+          {/* Desktop Right Hand CTA System */}
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/login" className="text-xs font-semibold uppercase tracking-wider text-zinc-600 transition-colors hover:text-zinc-950 focus:outline-none">
+              Sign In
+            </Link>
+            <Link
+              href="/signup"
+              className="rounded-lg bg-zinc-950 px-4 py-2 text-xs font-medium uppercase tracking-wider text-white transition-all hover:bg-zinc-800 shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-zinc-950/20"
+            >
+              Create Account
+            </Link>
+          </div>
+
+          {/* Mobile Toggle */}
+          <button 
+            type="button"
+            className="md:hidden p-1.5 text-zinc-600 hover:text-zinc-950 transition-colors focus:outline-none rounded-md hover:bg-zinc-100"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle structural navigation drawer"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+
+        {/* Managed Mobile Navigation Drawer Layout */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15, ease: "easeInOut" }}
+              className="md:hidden absolute left-0 top-full w-full border-b border-zinc-200 bg-white px-8 py-6 shadow-xl shadow-zinc-200/50 flex flex-col gap-5"
+            >
+              <div className="flex flex-col gap-4 text-xs font-semibold uppercase tracking-wider text-zinc-600">
+                <a href="#features" onClick={(e) => handleScrollToSection(e, "features")} className="py-2 transition-colors hover:text-zinc-950 border-b border-zinc-50">Modules</a>
+                <a href="#how-it-works" onClick={(e) => handleScrollToSection(e, "how-it-works")} className="py-2 transition-colors hover:text-zinc-950 border-b border-zinc-50">Journey</a>
+                <a href="#sectors" onClick={(e) => handleScrollToSection(e, "sectors")} className="py-2 transition-colors hover:text-zinc-950 border-b border-zinc-50">Sectors</a>
+                <a href="#faq" onClick={(e) => handleScrollToSection(e, "faq")} className="py-2 transition-colors hover:text-zinc-950">Documentation</a>
+              </div>
+              <hr className="border-zinc-100" />
+              <div className="flex flex-col gap-3">
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-center rounded-lg border border-zinc-200 py-2.5 text-xs font-semibold uppercase tracking-wider text-zinc-600 transition-colors hover:bg-zinc-50">
+                  Sign In
+                </Link>
+                <Link 
+                  href="/dashboard/chat" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full rounded-lg bg-orange-500 py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-white shadow-md shadow-orange-500/10 transition-colors hover:bg-orange-600"
+                >
+                  Launch Workspace
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+
+      {/* ── Hero Canvas ──────────────────────────────────────────────────── */}
+      <section className="relative flex min-h-[75vh] items-center overflow-hidden bg-white border-b border-zinc-200/40">
+        <div className="absolute top-0 right-0 h-full w-1/2 bg-zinc-50/40 border-l border-zinc-100 hidden lg:block" />
+
+        <div className="relative mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 lg:px-12">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+
+            {/* Left copy deck */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="relative z-10 flex flex-col gap-6"
+            >
+              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-zinc-200/80 bg-zinc-50 px-3 py-1 text-[9px] font-medium uppercase tracking-[0.15em] text-zinc-500">
+                <Sparkles className="h-3 w-3 text-zinc-400 stroke-2" />
+                Automated Infrastructure Engine
+              </div>
+
+              <h1 className="text-4xl font-normal leading-[1.1] tracking-[-0.03em] text-zinc-950 sm:text-5xl lg:text-6xl">
+                Global trade compliance,<br />
+                <span className="text-orange-500 font-medium">simplified at scale.</span>
               </h1>
 
-              <p className="max-w-lg text-lg leading-relaxed text-zinc-400">
-                AI-powered export guidance for Indian businesses — IEC registration,
-                scheme matching, HS codes, FTA savings, and compliance. All in one place.
+              <p className="max-w-md text-[13px] leading-relaxed text-zinc-500 font-normal">
+                An integrated data workspace configuring IEC tracking parameters, verified customs structures, preferential FTA logic, and trade workflows for professional Indian exporters.
               </p>
 
-              {/* CTAs */}
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-col gap-3 sm:flex-row pt-2">
                 <Link
-                  href="/dashboard/chat"
-                  className="btn-shimmer inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-saffron-500 to-orange-500 px-7 py-3.5 text-base font-bold text-white shadow-lg shadow-saffron-500/25 transition-all duration-200 hover:scale-[1.02] hover:shadow-xl hover:shadow-saffron-500/35"
+                  href="/signup"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-xs font-medium uppercase tracking-wider text-white shadow-sm transition-all hover:bg-orange-600 active:scale-[0.99]"
                 >
-                  Start Exporting Free
-                  <ArrowRight className="h-4 w-4" />
+                  Create Free Profile
+                  <ArrowRight className="h-3.5 w-3.5 stroke-2" />
                 </Link>
                 <a
-                  href="#how-it-works"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-700 px-7 py-3.5 text-base font-semibold text-zinc-300 transition-all duration-200 hover:border-zinc-500 hover:bg-zinc-900"
+                  href="#features"
+                  onClick={(e) => handleScrollToSection(e, "features")}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-5 py-2.5 text-xs font-medium uppercase tracking-wider text-zinc-500 transition-all hover:border-zinc-300 hover:bg-zinc-50"
                 >
-                  See How It Works
+                  Review Platform Framework
                 </a>
               </div>
 
-              {/* Trust signals */}
-              <div className="flex flex-wrap items-center gap-5 text-sm text-zinc-500">
-                {["No credit card", "Free to start", "Instant answers"].map((t) => (
-                  <span key={t} className="flex items-center gap-1.5">
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-india-green-500" />
+              <div className="flex flex-wrap items-center gap-6 pt-4 text-[10px] font-medium uppercase tracking-widest text-zinc-400">
+                {["Zero Configuration", "Production Ready", "Secure Sandbox"].map((t) => (
+                  <span key={t} className="flex items-center gap-2">
+                    <span className="h-1 w-1 shrink-0 rounded-full bg-zinc-300" />
                     {t}
                   </span>
                 ))}
               </div>
             </motion.div>
 
-            {/* Right — Globe */}
+            {/* Right Globe Section */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.82 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1.1, ease: "easeOut", delay: 0.25 }}
-              className="order-1 relative flex justify-center lg:order-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.9 }}
+              transition={{ duration: 0.7 }}
+              className="relative flex justify-center lg:justify-end"
             >
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <div className="h-80 w-80 rounded-full bg-saffron-500/5 blur-[70px]" />
-              </div>
-              <div className="relative z-10 w-full max-w-115">
-                <Globe />
+              <div className="w-full max-w-sm aspect-square opacity-90 scale-95 lg:scale-100">
+                <LocalGlobeFallback />
               </div>
             </motion.div>
 
@@ -285,87 +396,76 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Stats bar ────────────────────────────────────────────────────── */}
-      <section className="border-y border-zinc-800 bg-zinc-900/70 backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="grid grid-cols-2 gap-10 text-center lg:grid-cols-4"
-          >
+      {/* ── Metric Performance Node ────────────────────────────────────── */}
+      <section className="border-b border-zinc-200/50 bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-8 lg:px-12">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4 text-left">
             {[
-              { target: 200, suffix: "+", label: "Export Schemes", sub: "GOI incentive programs" },
-              { target: 160, suffix: "+", label: "Countries Covered", sub: "Global market reach" },
-              { target: 60, suffix: "+", label: "Glossary Terms", sub: "Plain-language definitions" },
-              { target: 8, suffix: "", label: "Export Sectors", sub: "Tailored AI guidance" },
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="flex flex-col items-center gap-1"
-              >
-                <p className="bg-linear-to-br from-saffron-400 to-orange-500 bg-clip-text text-4xl font-extrabold tabular-nums text-transparent sm:text-5xl">
-                  <AnimatedCounter target={stat.target} suffix={stat.suffix} />
-                </p>
-                <p className="text-sm font-semibold text-zinc-200">{stat.label}</p>
-                <p className="hidden text-xs text-zinc-500 sm:block">{stat.sub}</p>
-              </motion.div>
+              { target: 200, suffix: "+", label: "Export Schemes", sub: "Active GOI frameworks" },
+              { target: 160, suffix: "+", label: "Countries Mapped", sub: "Global border matrices" },
+              { target: 60, suffix: "+", label: "Glossary Clusters", sub: "Plain-language keys" },
+              { target: 8, suffix: "", label: "Sector Channels", sub: "Optimized operational pipelines" },
+            ].map((stat) => (
+              <div key={stat.label} className="border-l border-zinc-100 pl-4 flex flex-col justify-center">
+                <span className="text-2xl font-medium tracking-tight text-zinc-950 sm:text-3xl">
+                  <LocalCounterFallback value={stat.target} suffix={stat.suffix} />
+                </span>
+                <span className="text-[11px] font-semibold text-zinc-800 tracking-tight mt-0.5">{stat.label}</span>
+                <span className="text-[10px] text-zinc-400 font-normal">{stat.sub}</span>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ── Features grid ────────────────────────────────────────────────── */}
-      <section className="bg-zinc-950 py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mb-16 text-center"
-          >
-            <span className="mb-3 block text-xs font-bold uppercase tracking-[0.2em] text-saffron-500">
-              Platform
+      {/* ── Modular Core Architecture Section (Polished Asymmetric Bento Grid) ── */}
+      <section id="features" className="py-24 bg-white">
+        <div className="mx-auto max-w-7xl px-6 lg:px-12">
+          <div className="mb-14 border-l-2 border-orange-500 pl-4 text-left">
+            <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-400 mb-1">
+              Architecture Layout
             </span>
-            <h2 className="mb-5 text-4xl font-extrabold text-white sm:text-5xl">
-              Every Tool You Need to Export
+            <h2 className="text-2xl font-normal tracking-tight text-zinc-950 sm:text-3xl">
+              Engineered Trade Tools
             </h2>
-            <p className="mx-auto max-w-xl text-lg text-zinc-400">
-              Six integrated tools covering every stage — from your first IEC to scaling across markets.
+            <p className="max-w-md text-xs text-zinc-400 mt-1 font-normal leading-relaxed">
+              Six structural modular paths combined cleanly inside an easy single-pane dashboard wrapper layout.
             </p>
-          </motion.div>
+          </div>
 
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            className="grid gap-4 grid-cols-1 md:grid-cols-3"
           >
             {FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <motion.div key={f.href} variants={cardVariants}>
-                  <Link
-                    href={f.href}
-                    className={`gradient-border group flex h-full flex-col gap-4 rounded-2xl border border-zinc-800 bg-zinc-900 p-7 transition-all duration-200 ${f.border} hover:bg-zinc-900/80`}
-                  >
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${f.bg}`}>
-                      <Icon className={`h-5 w-5 ${f.color}`} />
-                    </div>
+                <motion.div 
+                  key={f.href} 
+                  variants={cardVariants} 
+                  className={`group bg-white rounded-xl border border-zinc-200/60 p-6 sm:p-8 transition-all duration-300 ${f.span} ${f.hoverBg} hover:shadow-[0_8px_30px_rgba(0,0,0,0.02)] flex flex-col justify-between`}
+                >
+                  <Link href={f.href} className="flex flex-col justify-between h-full gap-8 focus:outline-none w-full">
                     <div>
-                      <p className="mb-1.5 text-base font-bold text-zinc-100">{f.label}</p>
-                      <p className="text-sm leading-relaxed text-zinc-500">{f.desc}</p>
+                      {/* Icon wrapper badge */}
+                      <div className={`flex h-9 w-9 items-center justify-center rounded-lg border ${f.bg} text-zinc-400 group-hover:text-zinc-900 transition-colors mb-5`}>
+                        <Icon className={`h-4 w-4 stroke-2 ${f.color}`} />
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-sm font-semibold text-zinc-950 tracking-tight flex items-center gap-1.5">
+                          {f.label}
+                        </h3>
+                        <p className="text-xs leading-relaxed text-zinc-500 mt-1.5 font-normal max-w-xl">{f.desc}</p>
+                      </div>
                     </div>
-                    <div className="mt-auto flex items-center gap-1 text-xs font-semibold text-zinc-600 transition-colors group-hover:text-saffron-400">
-                      Explore
-                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+
+                    <div className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-zinc-400 transition-colors group-hover:text-zinc-900 pt-2 border-t border-zinc-100/80">
+                      <span>Initialize Engine</span>
+                      <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
                     </div>
                   </Link>
                 </motion.div>
@@ -375,179 +475,109 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Your Export Journey (How it works) ──────────────────────────── */}
-      <section id="how-it-works" className="relative overflow-hidden bg-zinc-900 py-24">
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-saffron-500/3 to-transparent" />
-
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-16 text-center"
-          >
-            <span className="mb-3 block text-xs font-bold uppercase tracking-[0.2em] text-saffron-500">
-              Your Export Journey
+      {/* ── Operational Milestones Section ──────────────────────────────── */}
+      <section id="how-it-works" className="py-24 bg-[#FAFAFA] border-y border-zinc-200/50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-12">
+          <div className="mb-16 text-center">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-orange-500 mb-1 block">
+              Sequential Path
             </span>
-            <h2 className="text-4xl font-extrabold text-white sm:text-5xl">
-              From Zero to First Shipment
+            <h2 className="text-2xl font-normal tracking-tight text-zinc-950 sm:text-3xl">
+              From Origin Setup to First Customs Release
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-zinc-400">
-              Six steps. Each one takes minutes. Together, they make you export-ready.
-            </p>
-          </motion.div>
+          </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {STEPS.map((step, i) => {
-              const Icon = step.icon;
+          <div className="grid gap-px bg-zinc-200/60 border border-zinc-200/60 rounded-xl overflow-hidden shadow-sm">
+            {STEPS.map((step) => {
               return (
-                <motion.div
+                <div
                   key={step.num}
-                  initial={{ opacity: 0, y: 32 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  className="relative flex flex-col gap-4 rounded-2xl border border-zinc-800 bg-zinc-800/50 p-6"
+                  className="relative flex flex-col sm:flex-row sm:items-center justify-between bg-white p-6 gap-4"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800">
-                      <Icon className="h-5 w-5 text-saffron-400" />
+                  <div className="flex items-start gap-4 sm:items-center">
+                    <span className="text-xs font-mono font-medium text-zinc-400 select-none tracking-tighter">
+                      {step.num} //
+                    </span>
+                    <div>
+                      <h4 className="text-xs font-semibold text-zinc-950 tracking-tight">{step.title}</h4>
+                      <p className="text-xs text-zinc-400 mt-0.5 font-normal max-w-md">{step.desc}</p>
                     </div>
-                    <span className="rounded-full bg-saffron-500/15 px-2.5 py-0.5 text-[10px] font-bold text-saffron-400">
-                      {step.time}
+                  </div>
+                  <div className="sm:text-right shrink-0 pl-8 sm:pl-0">
+                    <span className="inline-block rounded border border-zinc-200/80 bg-zinc-50 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wider text-zinc-500">
+                      T-Minus {step.time}
                     </span>
                   </div>
-                  <div>
-                    <h3 className="text-base font-bold text-white">{step.title}</h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">{step.desc}</p>
-                  </div>
-                  <span className="pointer-events-none absolute right-4 top-4 select-none text-4xl font-black text-saffron-500/5">
-                    {step.num}
-                  </span>
-                </motion.div>
+                </div>
               );
             })}
           </div>
-
-          {/* CTAs under journey */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-          >
-            <Link
-              href="/dashboard/readiness"
-              className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-saffron-500 to-orange-500 px-7 py-3.5 text-base font-bold text-white shadow-lg shadow-saffron-500/25 transition-all hover:scale-[1.02] hover:shadow-xl"
-            >
-              Start Exporting Free
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/dashboard/schemes/wizard"
-              className="inline-flex items-center gap-2 rounded-xl border border-zinc-600 px-7 py-3.5 text-base font-semibold text-zinc-300 transition-all hover:border-zinc-400 hover:bg-zinc-800"
-            >
-              See Your Schemes
-            </Link>
-            <Link
-              href="/dashboard/countries"
-              className="inline-flex items-center gap-2 rounded-xl border border-zinc-600 px-7 py-3.5 text-base font-semibold text-zinc-300 transition-all hover:border-zinc-400 hover:bg-zinc-800"
-            >
-              Explore Markets
-            </Link>
-          </motion.div>
         </div>
       </section>
 
-      {/* ── What You'll Build ──────────────────────────────────────────── */}
-      <section className="border-y border-zinc-800 bg-zinc-950 py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
-            <span className="mb-3 block text-xs font-bold uppercase tracking-[0.2em] text-saffron-500">
-              Your Workspace
+      {/* ── Document Workspace Generation List ──────────────────────────── */}
+      <section className="bg-white py-24 border-b border-zinc-200/40">
+        <div className="mx-auto max-w-3xl px-6">
+          <div className="mb-14 text-center">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-400 block mb-1">
+              Configuration Output
             </span>
-            <h2 className="text-4xl font-extrabold text-white sm:text-5xl">
-              What You&apos;ll Build
+            <h2 className="text-2xl font-normal tracking-tight text-zinc-950">
+              The Workspace Asset Registry
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-zinc-400">
-              India2World isn&apos;t a chatbot — it&apos;s an export workspace you fill with intelligence specific to your business.
-            </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="mx-auto grid max-w-3xl gap-3"
-          >
+          <div className="divide-y divide-zinc-100 border-y border-zinc-100 bg-white">
             {WHAT_YOU_BUILD.map((item, i) => (
-              <motion.div
-                key={item.label}
-                variants={cardVariants}
-                className="flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900/70 px-5 py-4"
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-india-green-500/20 text-sm font-bold text-india-green-400">
-                  {i + 1}
+              <div key={item.label} className="grid sm:grid-cols-3 gap-2 py-5 items-baseline hover:bg-zinc-50/40 transition-colors px-3">
+                <span className="text-[11px] font-mono font-medium text-zinc-400">
+                  SYS_RECORD.0{i + 1}
                 </span>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-zinc-100">{item.label}</p>
-                  <p className="text-xs text-zinc-500">{item.desc}</p>
-                </div>
-              </motion.div>
+                <span className="text-xs font-semibold text-zinc-950 tracking-tight sm:col-span-1">
+                  {item.label}
+                </span>
+                <span className="text-xs text-zinc-400 font-normal sm:text-right">
+                  {item.desc}
+                </span>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ── Sectors showcase ─────────────────────────────────────────────── */}
-      <section className="bg-zinc-950 py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-14 text-center"
-          >
-            <span className="mb-3 block text-xs font-bold uppercase tracking-[0.2em] text-saffron-500">
-              Sectors
+      {/* ── Channels Showcase Section ───────────────────────────────────── */}
+      <section id="sectors" className="bg-[#FAFAFA] py-24 border-b border-zinc-200/50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-12">
+          <div className="mb-12 border-l-2 border-zinc-900 pl-4 text-left">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-400 mb-0.5 block">
+              Global Sourcing
             </span>
-            <h2 className="text-4xl font-extrabold text-white sm:text-5xl">
-              Built for Every Indian Exporter
+            <h2 className="text-2xl font-normal tracking-tight text-zinc-950 sm:text-3xl">
+              Configured Industry Channels
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-zinc-400">
-              Sector-specific AI guidance, scheme matching, and compliance checklists.
-            </p>
-          </motion.div>
+          </div>
 
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
           >
             {SECTORS.map((sector) => (
-              <motion.div
-                key={sector.name}
-                variants={cardVariants}
-                whileHover={{ scale: 1.03, y: -4 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
+              <motion.div key={sector.name} variants={cardVariants}>
                 <Link
                   href={`/dashboard/chat?q=Export guidance for ${encodeURIComponent(sector.name)} from India`}
-                  className="group flex h-full flex-col items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-center transition-all duration-200 hover:border-saffron-500/30 hover:bg-zinc-800/80 sm:p-6"
+                  className="group flex flex-col justify-between h-full rounded-lg border border-zinc-200/70 bg-white p-5 transition-all hover:border-zinc-400 hover:shadow-[0_4px_20px_rgba(0,0,0,0.01)] focus:outline-none"
                 >
-                  <span className="text-4xl">{sector.emoji}</span>
-                  <p className="text-sm font-bold text-zinc-100">{sector.name}</p>
-                  <p className="hidden text-xs leading-tight text-zinc-500 sm:block">{sector.hook}</p>
-                  <ArrowRight className="h-3.5 w-3.5 text-zinc-600 transition-all group-hover:translate-x-0.5 group-hover:text-saffron-400" />
+                  <div>
+                    <span className="text-xl inline-block mb-3 bg-zinc-50 p-2 rounded border border-zinc-100">{sector.emoji}</span>
+                    <h3 className="text-xs font-semibold text-zinc-950 tracking-tight">{sector.name}</h3>
+                    <p className="text-[11px] leading-relaxed text-zinc-400 font-normal mt-0.5">{sector.hook}</p>
+                  </div>
+                  <div className="mt-4 flex items-center justify-end text-zinc-300 group-hover:text-zinc-600 transition-colors">
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </div>
                 </Link>
               </motion.div>
             ))}
@@ -555,44 +585,30 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FAQ ──────────────────────────────────────────────────────────── */}
-      <section className="bg-zinc-900 py-24">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-14 text-center"
-          >
-            <span className="mb-3 block text-xs font-bold uppercase tracking-[0.2em] text-saffron-500">
-              FAQ
-            </span>
-            <h2 className="text-4xl font-extrabold text-white">
-              Frequently Asked Questions
+      {/* ── FAQ Cluster ─────────────────────────────────────────────────── */}
+      <section id="faq" className="bg-white py-24">
+        <div className="mx-auto max-w-2xl px-6">
+          <div className="mb-14 text-center">
+            <h2 className="text-2xl font-normal tracking-tight text-zinc-950">
+              Technical Verification Desk
             </h2>
-          </motion.div>
+          </div>
 
-          <div className="divide-y divide-zinc-800">
+          <div className="divide-y divide-zinc-100 border-y border-zinc-100">
             {FAQS.map((faq, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-              >
+              <div key={i} className="py-1">
                 <button
                   type="button"
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left font-semibold text-white transition-colors hover:text-saffron-400"
+                  className="flex w-full items-center justify-between gap-4 py-4 text-left text-xs font-semibold text-zinc-900 transition-colors hover:text-orange-500 focus:outline-none"
                 >
                   <span>{faq.q}</span>
                   <motion.span
                     animate={{ rotate: openFaq === i ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.1 }}
                     className="shrink-0"
                   >
-                    <ChevronDown className="h-5 w-5 text-zinc-500" />
+                    <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
                   </motion.span>
                 </button>
                 <AnimatePresence initial={false}>
@@ -602,63 +618,21 @@ export default function LandingPage() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.28, ease: "easeInOut" }}
+                      transition={{ duration: 0.15, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <p className="pb-5 text-sm leading-relaxed text-zinc-400">{faq.a}</p>
+                      <p className="pb-4 text-xs font-normal leading-relaxed text-zinc-400 max-w-xl">{faq.a}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Final CTA ────────────────────────────────────────────────────── */}
-      <section
-        className="relative overflow-hidden py-20"
-        style={{ background: "linear-gradient(135deg, #FF9933 0%, #f97316 45%, #138808 100%)" }}
-      >
-        <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-10" />
-
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="relative mx-auto flex max-w-4xl flex-col items-center gap-8 px-4 text-center sm:px-6"
-        >
-          <div className="flex flex-col gap-4">
-            <h2 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl">
-              Start Exporting Today
-            </h2>
-            <p className="mx-auto max-w-xl text-lg text-white/80">
-              Join Indian exporters using AI to navigate compliance, unlock schemes, and ship with confidence.
-            </p>
-          </div>
-          <div className="flex flex-col gap-4 sm:flex-row">
-            <Link
-              href="/dashboard/chat"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-bold text-saffron-600 shadow-xl shadow-black/20 transition-all hover:scale-[1.02] hover:bg-saffron-50"
-            >
-              Start Exporting Free
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center rounded-xl border-2 border-white/60 px-8 py-4 text-base font-bold text-white transition-colors hover:bg-white/10"
-            >
-              Create Account
-            </Link>
-          </div>
-          <p className="flex items-center gap-2 text-sm text-white/60">
-            <Zap className="h-3.5 w-3.5" />
-            Free forever for core tools. No credit card required.
-          </p>
-        </motion.div>
-      </section>
-
+      {/* ── Bottom Footer Anchor Layout ────────────────────────────────── */}
+      <Footer />
     </div>
   );
 }

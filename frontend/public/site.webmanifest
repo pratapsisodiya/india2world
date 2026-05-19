@@ -1,0 +1,16 @@
+{
+  "name": "India2World",
+  "short_name": "India2World",
+  "description": "AI-powered export workspace for Indian businesses",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FF9933",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}

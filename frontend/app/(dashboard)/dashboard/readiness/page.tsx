@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { WizardShell } from "@/components/dashboard/WizardShell";
 import { ReadinessScoreCard } from "@/components/dashboard/ReadinessScoreCard";
 import { ReadinessActionPlan } from "@/components/dashboard/ReadinessActionPlan";
@@ -100,7 +100,8 @@ export default function ReadinessPage() {
   const pushScoreHistory = useUserStore((s) => s.pushScoreHistory);
   const logActivity = useActivityStore((s) => s.log);
 
-  const { startStream, buffer, setBuffer } = useSSE();
+  const { startStream, stop, buffer, setBuffer } = useSSE();
+  const stopRef = useRef(stop);
 
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(0);
@@ -208,7 +209,7 @@ export default function ReadinessPage() {
             <ReadinessActionPlan content={buffer} loading={loadingPlan} />
             <ScoreHistoryPanel />
             <button
-              onClick={() => { setStarted(false); setStep(0); setAnswer({ ...EMPTY_ANSWER }); setScore(null); setBuffer(""); }}
+              onClick={() => { stopRef.current(); setStarted(false); setStep(0); setAnswer({ ...EMPTY_ANSWER }); setScore(null); setBuffer(""); }}
               className="self-start text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
             >
               ← Retake assessment

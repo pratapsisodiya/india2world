@@ -1,6 +1,3 @@
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-
 export default function PublicLayout({
   children,
 }: {
@@ -8,9 +5,7 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      <Header />
       <main className="flex flex-1 flex-col">{children}</main>
-      <Footer />
     </>
   );
 }

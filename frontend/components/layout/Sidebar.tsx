@@ -14,6 +14,7 @@ import {
   FileText,
   Globe2,
   Wand2,
+  ShieldAlert,
   User,
   ChevronDown,
   Scale,
@@ -68,21 +69,38 @@ const ACTIVITY_ICONS: Record<string, typeof Clock> = {
 const sidebarGroups = [
   {
     label: "AI Tools",
-    links: [
-      { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-      { href: "/dashboard/chat", label: "AI Chat", icon: MessageSquare },
-      { href: "/dashboard/research", label: "Research Agent", icon: Sparkles },
-      { href: "/dashboard/updates", label: "News Feed", icon: Newspaper },
-      { href: "/dashboard/readiness", label: "Readiness Score", icon: Target },
-      { href: "/dashboard/schemes/wizard", label: "Find My Schemes", icon: Wand2 },
-      { href: "/dashboard/buyers", label: "Buyer Finder", icon: Users },
-      { href: "/dashboard/documents", label: "Doc Generator", icon: FileText },
-      { href: "/dashboard/events", label: "Trade Events", icon: CalendarDays },
-      { href: "/dashboard/checklist", label: "Export Checklist", icon: FileText },
-      { href: "/dashboard/fta", label: "FTA Advantage", icon: Globe2 },
-      { href: "/dashboard/compare", label: "Market Comparison", icon: Scale },
-      { href: "/dashboard/pricing", label: "Pricing Calculator", icon: DollarSign },
-      { href: "/dashboard/currency", label: "Currency Converter", icon: Banknote },
+    // split into logical subcategories for easier open/close
+    subgroups: [
+      {
+        label: "Core",
+        links: [
+          { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+          { href: "/dashboard/chat", label: "AI Chat", icon: MessageSquare },
+          { href: "/dashboard/research", label: "Research Agent", icon: Sparkles },
+          { href: "/dashboard/updates", label: "News Feed", icon: Newspaper },
+        ],
+      },
+      {
+        label: "Assessment",
+        links: [
+          { href: "/dashboard/readiness", label: "Readiness Score", icon: Target },
+          { href: "/dashboard/schemes/wizard", label: "Find My Schemes", icon: Wand2 },
+          { href: "/dashboard/buyers", label: "Buyer Finder", icon: Users },
+          { href: "/dashboard/screening", label: "Party Screening", icon: ShieldAlert },
+          { href: "/dashboard/documents", label: "Doc Generator", icon: FileText },
+          { href: "/dashboard/events", label: "Trade Events", icon: CalendarDays },
+        ],
+      },
+      {
+        label: "Tools & Calculators",
+        links: [
+          { href: "/dashboard/checklist", label: "Export Checklist", icon: FileText },
+          { href: "/dashboard/fta", label: "FTA Advantage", icon: Globe2 },
+          { href: "/dashboard/compare", label: "Market Comparison", icon: Scale },
+          { href: "/dashboard/pricing", label: "Pricing Calculator", icon: DollarSign },
+          { href: "/dashboard/currency", label: "Currency Converter", icon: Banknote },
+        ],
+      },
     ],
   },
   {
@@ -175,7 +193,7 @@ export function Sidebar() {
     "bg-red-500";
 
   return (
-    <aside className="hidden w-60 shrink-0 border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 lg:flex lg:flex-col sticky top-0 h-screen overflow-y-auto">
+    <aside className="hidden w-60 shrink-0 border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 lg:flex lg:flex-col sticky top-0 h-screen overflow-y-auto sidebar-scroll">
       <div className="flex flex-col p-3 gap-3">
 
         {/* ── Profile card ─────────────────────────────────────────────── */}
@@ -328,35 +346,87 @@ export function Sidebar() {
                 </button>
                 {!isCollapsed && (
                   <div className="flex flex-col gap-0.5">
-                    {group.links.map((link) => {
-                      const active =
-                        link.href === "/dashboard"
-                          ? pathname === "/dashboard"
-                          : link.href === "/dashboard/schemes"
-                          ? pathname === "/dashboard/schemes"
-                          : pathname.startsWith(link.href);
-                      const Icon = link.icon;
-                      return (
-                        <Link
-                          key={link.href}
-                          href={link.href}
-                          className={cn(
-                            "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
-                            active
-                              ? "bg-saffron-50 text-saffron-700 dark:bg-saffron-500/15 dark:text-saffron-400"
-                              : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200"
-                          )}
-                        >
-                          <Icon className="h-4 w-4 shrink-0" />
-                          <span className="flex-1">{link.label}</span>
-                          {link.href === "/dashboard/chat" && unreadChatCount > 0 && !active && (
-                            <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-saffron-500 px-1 text-[10px] font-bold text-white">
-                              {unreadChatCount}
-                            </span>
-                          )}
-                        </Link>
-                      );
-                    })}
+                    {group.subgroups ? (
+                      group.subgroups.map((sub) => {
+                        const subKey = `${group.label}::${sub.label}`;
+                        const subCollapsed = collapsed[subKey] ?? false;
+                        return (
+                          <div key={sub.label} className={cn("pl-1", "pb-1")}> 
+                            <button
+                              type="button"
+                              onClick={() => toggleGroup(subKey)}
+                              className="mb-1 flex w-full items-center justify-between px-2.5 text-[11px] font-semibold tracking-wider text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+                            >
+                              {sub.label}
+                              <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", subCollapsed && "-rotate-90")} />
+                            </button>
+                            {!subCollapsed && (
+                              <div className="flex flex-col gap-0.5">
+                                {sub.links.map((link) => {
+                                  const active =
+                                    link.href === "/dashboard"
+                                      ? pathname === "/dashboard"
+                                      : link.href === "/dashboard/schemes"
+                                      ? pathname === "/dashboard/schemes"
+                                      : pathname.startsWith(link.href);
+                                  const Icon = link.icon;
+                                  return (
+                                    <Link
+                                      key={link.href}
+                                      href={link.href}
+                                      className={cn(
+                                        "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
+                                        active
+                                          ? "bg-saffron-50 text-saffron-700 dark:bg-saffron-500/15 dark:text-saffron-400"
+                                          : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200"
+                                      )}
+                                    >
+                                      <Icon className="h-4 w-4 shrink-0" />
+                                      <span className="flex-1">{link.label}</span>
+                                      {link.href === "/dashboard/chat" && unreadChatCount > 0 && !active && (
+                                        <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-saffron-500 px-1 text-[10px] font-bold text-white">
+                                          {unreadChatCount}
+                                        </span>
+                                      )}
+                                    </Link>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      group.links.map((link) => {
+                        const active =
+                          link.href === "/dashboard"
+                            ? pathname === "/dashboard"
+                            : link.href === "/dashboard/schemes"
+                            ? pathname === "/dashboard/schemes"
+                            : pathname.startsWith(link.href);
+                        const Icon = link.icon;
+                        return (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className={cn(
+                              "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
+                              active
+                                ? "bg-saffron-50 text-saffron-700 dark:bg-saffron-500/15 dark:text-saffron-400"
+                                : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200"
+                            )}
+                          >
+                            <Icon className="h-4 w-4 shrink-0" />
+                            <span className="flex-1">{link.label}</span>
+                            {link.href === "/dashboard/chat" && unreadChatCount > 0 && !active && (
+                              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-saffron-500 px-1 text-[10px] font-bold text-white">
+                                {unreadChatCount}
+                              </span>
+                            )}
+                          </Link>
+                        );
+                      })
+                    )}
                   </div>
                 )}
               </div>

@@ -11,33 +11,22 @@ export interface ScoreHistoryEntry {
 }
 
 export interface UserProfile {
-  // Core identity
   businessName: string;
   businessType: BusinessType;
   sector: string;
   location: string;
   email: string;
   isLoggedIn: boolean;
-
-  // Export profile
   exportProducts: string;
   targetMarkets: string[];
   exportStage: ExportStage | "";
   preferredCurrency: string;
-
-  // Compliance focus
   complianceFocus: string[];
-
-  // Readiness
   readinessScore?: number;
   scoreHistory: ScoreHistoryEntry[];
-
-  // Registration status
   hasIEC: boolean;
   isoVerified: boolean;
   onboardingComplete: boolean;
-
-  // Saved items (lightweight bookmarks)
   savedSchemes: string[];
   savedGlossaryTerms: string[];
   savedHsCodes: string[];
@@ -54,6 +43,65 @@ interface UserState {
   toggleSavedGlossaryTerm: (term: string) => void;
   toggleSavedHsCode: (code: string) => void;
   toggleSavedCountry: (code: string) => void;
+}
+
+// Global auth token getter set by UserSync component
+export let globalGetToken: (() => Promise<string | null>) | null = null;
+export function setGlobalGetToken(fn: () => Promise<string | null>) {
+  globalGetToken = fn;
+}
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+
+async function pushProfile(profile: Partial<UserProfile>) {
+  if (typeof window === 'undefined') return;
+  if (!globalGetToken) return;
+  const token = await globalGetToken();
+  if (!token) return;
+  
+  const payload = {
+    business_name: profile.businessName,
+    business_type: profile.businessType,
+    sector: profile.sector,
+    location: profile.location,
+    export_products: profile.exportProducts,
+    target_markets: profile.targetMarkets,
+    export_stage: profile.exportStage,
+    preferred_currency: profile.preferredCurrency,
+    compliance_focus: profile.complianceFocus,
+    has_iec: profile.hasIEC,
+    iso_verified: profile.isoVerified,
+    readiness_score: profile.readinessScore,
+    onboarding_complete: profile.onboardingComplete,
+  };
+  
+  // Remove undefined values
+  Object.keys(payload).forEach((key) => payload[key as keyof typeof payload] === undefined && delete payload[key as keyof typeof payload]);
+
+  await fetch(`${BACKEND_URL}/api/user/profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  }).catch(() => {}); // silent
+}
+
+async function syncSavedItem(type: string, id: string, action: "add" | "remove") {
+  if (typeof window === 'undefined') return;
+  if (!globalGetToken) return;
+  const token = await globalGetToken();
+  if (!token) return;
+  
+  await fetch(`${BACKEND_URL}/api/user/saved`, {
+    method: action === "add" ? "POST" : "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ item_type: type, item_id: id }),
+  }).catch(() => {}); // silent
 }
 
 export const useUserStore = create<UserState>()(
@@ -82,9 +130,12 @@ export const useUserStore = create<UserState>()(
       },
 
       setProfile: (partial) =>
-        set((state) => ({
-          profile: { ...state.profile, ...partial },
-        })),
+        set((state) => {
+          const next = { ...state.profile, ...partial };
+          // Don't await, run in background
+          pushProfile(next);
+          return { profile: next };
+        }),
 
       pushScoreHistory: (entry) =>
         set((state) => ({
@@ -97,28 +148,36 @@ export const useUserStore = create<UserState>()(
       toggleSavedScheme: (id) =>
         set((state) => {
           const saved = state.profile.savedSchemes ?? [];
-          const next = saved.includes(id) ? saved.filter((s) => s !== id) : [...saved, id];
+          const exists = saved.includes(id);
+          const next = exists ? saved.filter((s) => s !== id) : [...saved, id];
+          syncSavedItem("scheme", id, exists ? "remove" : "add");
           return { profile: { ...state.profile, savedSchemes: next } };
         }),
 
       toggleSavedGlossaryTerm: (term) =>
         set((state) => {
           const saved = state.profile.savedGlossaryTerms ?? [];
-          const next = saved.includes(term) ? saved.filter((t) => t !== term) : [...saved, term];
+          const exists = saved.includes(term);
+          const next = exists ? saved.filter((t) => t !== term) : [...saved, term];
+          syncSavedItem("glossary", term, exists ? "remove" : "add");
           return { profile: { ...state.profile, savedGlossaryTerms: next } };
         }),
 
       toggleSavedHsCode: (code) =>
         set((state) => {
           const saved = state.profile.savedHsCodes ?? [];
-          const next = saved.includes(code) ? saved.filter((c) => c !== code) : [...saved, code];
+          const exists = saved.includes(code);
+          const next = exists ? saved.filter((c) => c !== code) : [...saved, code];
+          syncSavedItem("hs-code", code, exists ? "remove" : "add");
           return { profile: { ...state.profile, savedHsCodes: next } };
         }),
 
       toggleSavedCountry: (code) =>
         set((state) => {
           const saved = state.profile.savedCountries ?? [];
-          const next = saved.includes(code) ? saved.filter((c) => c !== code) : [...saved, code];
+          const exists = saved.includes(code);
+          const next = exists ? saved.filter((c) => c !== code) : [...saved, code];
+          syncSavedItem("country", code, exists ? "remove" : "add");
           return { profile: { ...state.profile, savedCountries: next } };
         }),
 
@@ -143,7 +202,6 @@ export const useUserStore = create<UserState>()(
     }),
     {
       name: "india2world-user",
-      // Merge to handle users with old persisted state that lack new fields
       merge: (persisted, current) => {
         const p = persisted as { profile?: Partial<UserProfile> } | null;
         return {
@@ -151,7 +209,6 @@ export const useUserStore = create<UserState>()(
           profile: {
             ...current.profile,
             ...(p?.profile ?? {}),
-            // Ensure new fields exist even for old persisted profiles
             businessType: p?.profile?.businessType ?? "",
             preferredCurrency: p?.profile?.preferredCurrency ?? "USD",
             complianceFocus: p?.profile?.complianceFocus ?? [],

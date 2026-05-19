@@ -102,8 +102,16 @@ export default function ResearchAgentPage() {
               },
             ]);
           },
-          onError: () => {
-             // original behaviour: discards partial content on error
+          onError: (_err, partialContent) => {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: crypto.randomUUID(),
+                role: "assistant",
+                content: partialContent + (partialContent ? "\n\n" : "") + "⚠️ Research interrupted. Partial results shown above.",
+                ts: Date.now(),
+              },
+            ]);
           }
         }
       );

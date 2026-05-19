@@ -31,7 +31,7 @@ export const ChatRequestSchema = z.object({
 export const AgentRequestSchema = z.object({
   messages: z.array(MessageSchema).min(1).max(100),
   userProfile: UserProfileSchema,
-  provider: z.enum(["openai"]).default("openai"),
+  provider: z.enum(["openai", "gemini"]).default("openai"),
 });
 
 export const SchemeMatcherRequestSchema = z.object({
@@ -57,6 +57,12 @@ export const BuyerFinderRequestSchema = z.object({
   targetCountry: z.string().min(2).max(100),
   hsCode: z.string().max(20).optional(),
   sector: z.string().max(100).optional(),
+});
+
+export const ComplianceScreeningRequestSchema = z.object({
+  entityName: z.string().min(2).max(200),
+  country: z.string().min(2).max(100),
+  entityType: z.enum(["company", "individual", "vessel", "unknown"]).default("unknown"),
 });
 
 export const DocGeneratorRequestSchema = z.object({
@@ -202,3 +208,14 @@ export interface BuyerFinderResponse {
 
 export type BuyerFinderRequest = import("zod").infer<typeof BuyerFinderRequestSchema>;
 export type DocGeneratorRequest = import("zod").infer<typeof DocGeneratorRequestSchema>;
+export type ComplianceScreeningRequest = z.infer<typeof ComplianceScreeningRequestSchema>;
+
+export interface ComplianceScreeningResponse {
+  status: "clear" | "warning" | "blocked";
+  riskScore: number;
+  matchedLists: string[];
+  reasoning: string;
+  countryStatus: string;
+  recommendation: string;
+}
+

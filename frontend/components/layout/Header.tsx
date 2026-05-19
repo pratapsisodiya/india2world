@@ -15,6 +15,7 @@ import { cn } from "@/lib/cn";
 import { useUserStore } from "@/store/user";
 import { useActivityStore } from "@/store/activity";
 import { useSavedStore } from "@/store/saved";
+import { useClerk } from "@clerk/nextjs";
 
 const toolsLinks = [
   { href: "/dashboard/chat",            label: "AI Chat",          description: "Ask our export AI agent anything",          icon: MessageSquare, color: "text-orange-500",  iconBg: "bg-orange-50 dark:bg-orange-900/20" },
@@ -63,9 +64,7 @@ function useDropdown() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -340,17 +339,13 @@ function UserMenu() {
             className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800">
             <Bookmark className="h-4 w-4" /> Saved Items
           </Link>
-          <Link href="/settings" onClick={() => setOpen(false)}
+          <Link href="/dashboard/settings" onClick={() => setOpen(false)}
             className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800">
             <Settings className="h-4 w-4" /> Settings
           </Link>
           <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
-          <button
-            onClick={() => { logout(); setOpen(false); router.push("/"); }}
-            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
-          >
-            <LogOut className="h-4 w-4" /> Sign out
-          </button>
+          <UserMenuSignOut setOpen={setOpen} />
+        </div>
         </div>
       )}
     </div>
@@ -510,5 +505,27 @@ export function Header() {
       <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} />
       <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
     </>
+  );
+}
+
+function UserMenuSignOut({ setOpen }: { setOpen: (v: boolean) => void }) {
+  const router = useRouter();
+  const { signOut } = useClerk();
+  const logout = useUserStore((s) => s.logout);
+
+  const handleSignOut = async () => {
+    logout();
+    setOpen(false);
+    await signOut();
+    router.push("/");
+  };
+
+  return (
+    <button
+      onClick={handleSignOut}
+      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+    >
+      <LogOut className="h-4 w-4" /> Sign out
+    </button>
   );
 }

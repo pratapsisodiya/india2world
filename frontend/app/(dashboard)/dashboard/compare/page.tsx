@@ -85,7 +85,7 @@ Please use markdown tables and clear headers. Be specific and practical.`;
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [{ role: "user", content: prompt }],
-          provider: "claude",
+          provider: "openai",
         }),
         signal: abortRef.current.signal,
       });

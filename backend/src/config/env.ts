@@ -1,4 +1,22 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+import { existsSync } from "fs";
+import { resolve } from "path";
+import { fileURLToPath } from "url";
+
+const moduleDir = fileURLToPath(new URL(".", import.meta.url));
+const envCandidates = [
+  resolve(process.cwd(), ".env"),
+  resolve(process.cwd(), "backend/.env"),
+  resolve(moduleDir, "../../.env"),
+  resolve(moduleDir, "../../../.env"),
+];
+
+for (const envPath of envCandidates) {
+  if (existsSync(envPath)) {
+    dotenv.config({ path: envPath, override: true });
+    break;
+  }
+}
 
 function required(key: string): string {
   const v = process.env[key];
@@ -22,12 +40,12 @@ export const ENV = {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean),
-  OPENAI_API_KEY: optional("OPENAI_API_KEY"),
-  GEMINI_API_KEY: optional("GEMINI_API_KEY"),
-  TAVILY_API_KEY: optional("TAVILY_API_KEY"),
-  DATABASE_URL: optional("DATABASE_URL"),
-  CLERK_SECRET_KEY: optional("CLERK_SECRET_KEY"),
-  CLERK_PUBLISHABLE_KEY: optional("CLERK_PUBLISHABLE_KEY"),
+  OPENAI_API_KEY: optional("OPENAI_API_KEY") || undefined,
+  GEMINI_API_KEY: optional("GEMINI_API_KEY")?.startsWith("AIzaSy") && !optional("GEMINI_API_KEY")?.includes("REPLACE") ? optional("GEMINI_API_KEY") : undefined,
+  TAVILY_API_KEY: optional("TAVILY_API_KEY")?.startsWith("tvly-") && !optional("TAVILY_API_KEY")?.includes("REPLACE") ? optional("TAVILY_API_KEY") : undefined,
+  DATABASE_URL: optional("DATABASE_URL")?.startsWith("postgres") ? optional("DATABASE_URL") : undefined,
+  CLERK_SECRET_KEY: optional("CLERK_SECRET_KEY")?.startsWith("sk_") ? optional("CLERK_SECRET_KEY") : undefined,
+  CLERK_PUBLISHABLE_KEY: optional("CLERK_PUBLISHABLE_KEY")?.startsWith("pk_") ? optional("CLERK_PUBLISHABLE_KEY") : undefined,
   CHAT_RATE_LIMIT: optionalInt("CHAT_RATE_LIMIT", 30),
   AGENT_RATE_LIMIT: optionalInt("AGENT_RATE_LIMIT", 10),
   SCHEME_RATE_LIMIT: optionalInt("SCHEME_RATE_LIMIT", 20),
