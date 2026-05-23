@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { searchNews } from "../agent/agentService.js";
+import { fetchRssNews } from "../../utils/rssFetcher.js";
 import { NEWS_SECTION_QUERIES, NEWS_TTL_MS } from "../../config/constants.js";
 import { TtlCache } from "../../utils/ttlCache.js";
 import { ENV } from "../../config/env.js";
@@ -20,14 +21,6 @@ router.get("/api/news/exports", async (req: Request, res: Response) => {
     return;
   }
 
-  if (!ENV.TAVILY_API_KEY) {
-    res.status(503).json({
-      error: "Web search is not configured.",
-      hint: "Add TAVILY_API_KEY to backend/.env (free tier at tavily.com gives 1,000 searches/month).",
-    });
-    return;
-  }
-
   if (!refresh) {
     const cached = newsCache.get(section);
     if (cached) {
@@ -37,7 +30,10 @@ router.get("/api/news/exports", async (req: Request, res: Response) => {
   }
 
   try {
-    const results = await searchNews(NEWS_SECTION_QUERIES[section]!);
+    const query = NEWS_SECTION_QUERIES[section]!;
+    const results = ENV.TAVILY_API_KEY
+      ? await searchNews(query)
+      : await fetchRssNews(query);
 
     const items: NewsItem[] = results.map((r) => {
       let domain = "";

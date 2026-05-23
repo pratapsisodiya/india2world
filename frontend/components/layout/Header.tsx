@@ -346,7 +346,6 @@ function UserMenu() {
           <div className="my-1 border-t border-zinc-100 dark:border-zinc-800" />
           <UserMenuSignOut setOpen={setOpen} />
         </div>
-        </div>
       )}
     </div>
   );

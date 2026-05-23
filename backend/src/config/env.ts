@@ -40,12 +40,12 @@ export const ENV = {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean),
-  OPENAI_API_KEY: optional("OPENAI_API_KEY") || undefined,
-  GEMINI_API_KEY: optional("GEMINI_API_KEY")?.startsWith("AIzaSy") && !optional("GEMINI_API_KEY")?.includes("REPLACE") ? optional("GEMINI_API_KEY") : undefined,
-  TAVILY_API_KEY: optional("TAVILY_API_KEY")?.startsWith("tvly-") && !optional("TAVILY_API_KEY")?.includes("REPLACE") ? optional("TAVILY_API_KEY") : undefined,
-  DATABASE_URL: optional("DATABASE_URL")?.startsWith("postgres") ? optional("DATABASE_URL") : undefined,
-  CLERK_SECRET_KEY: optional("CLERK_SECRET_KEY")?.startsWith("sk_") ? optional("CLERK_SECRET_KEY") : undefined,
-  CLERK_PUBLISHABLE_KEY: optional("CLERK_PUBLISHABLE_KEY")?.startsWith("pk_") ? optional("CLERK_PUBLISHABLE_KEY") : undefined,
+  OPENAI_API_KEY: (() => { const v = optional("OPENAI_API_KEY"); return v && !v.includes("dummy") && !v.includes("REPLACE") ? v : undefined; })(),
+  GEMINI_API_KEY: (() => { const v = optional("GEMINI_API_KEY"); return v?.startsWith("AIzaSy") && !v.includes("REPLACE") && !v.includes("dummy") ? v : undefined; })(),
+  TAVILY_API_KEY: (() => { const v = optional("TAVILY_API_KEY"); return v?.startsWith("tvly-") && !v.includes("REPLACE") && !v.includes("dummy") ? v : undefined; })(),
+  DATABASE_URL: (() => { const v = optional("DATABASE_URL"); return v?.startsWith("postgres") && !v.includes("dummy") ? v : undefined; })(),
+  CLERK_SECRET_KEY: (() => { const v = optional("CLERK_SECRET_KEY"); return v?.startsWith("sk_") && !v.includes("dummy") && !v.includes("REPLACE") ? v : undefined; })(),
+  CLERK_PUBLISHABLE_KEY: (() => { const v = optional("CLERK_PUBLISHABLE_KEY"); return v?.startsWith("pk_") && !v.includes("dummy") && !v.includes("REPLACE") ? v : undefined; })(),
   CHAT_RATE_LIMIT: optionalInt("CHAT_RATE_LIMIT", 30),
   AGENT_RATE_LIMIT: optionalInt("AGENT_RATE_LIMIT", 10),
   SCHEME_RATE_LIMIT: optionalInt("SCHEME_RATE_LIMIT", 20),

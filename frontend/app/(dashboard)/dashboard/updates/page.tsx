@@ -14,7 +14,6 @@ import {
   Truck,
 } from "lucide-react";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
 
 interface NewsItem {
   title: string;
@@ -104,15 +103,13 @@ export default function UpdatesPage() {
       [id]: { ...prev[id], loading: true, error: null },
     }));
     try {
-      const url = new URL(`${BACKEND_URL}/api/news/exports`);
+      const url = new URL(`/api/news`, window.location.origin);
       url.searchParams.set("section", id);
       if (refresh) url.searchParams.set("refresh", "1");
       const resp = await fetch(url.toString());
       const json = await resp.json();
       if (!resp.ok) {
-        if (resp.status === 503) {
-          setGlobalError(json.hint || json.error);
-        }
+        if (resp.status === 503) setGlobalError(json.hint || json.error);
         setData((prev) => ({
           ...prev,
           [id]: {
@@ -136,12 +133,16 @@ export default function UpdatesPage() {
         },
       }));
     } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load news";
+      const isNetwork = msg === "Failed to fetch" || msg.includes("NetworkError") || msg.includes("fetch");
       setData((prev) => ({
         ...prev,
         [id]: {
           ...prev[id],
           loading: false,
-          error: err instanceof Error ? err.message : "Failed to load news",
+          error: isNetwork
+            ? "Cannot reach the backend server. Make sure it is running on port 4000."
+            : msg,
         },
       }));
     }
