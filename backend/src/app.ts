@@ -2,7 +2,7 @@ import "./config/env.js"; // load dotenv first
 import express from "express";
 import cors from "cors";
 import compression from "compression";
-import rateLimit from "express-rate-limit";
+import { rateLimit } from "express-rate-limit";
 
 import { ENV } from "./config/env.js";
 import { requestId } from "./middleware/requestId.js";
