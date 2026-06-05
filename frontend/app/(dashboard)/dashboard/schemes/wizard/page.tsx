@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 import { HS_CHAPTERS } from "@/app/data/hsCodes";
 import Link from "next/link";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 type ExporterType = "manufacturer" | "merchant" | "service";
 type FobRange = "under-50L" | "50L-1Cr" | "1Cr-5Cr" | "5Cr-25Cr" | "above-25Cr";

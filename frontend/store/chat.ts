@@ -67,7 +67,7 @@ function deriveTitle(messages: ChatMessage[]): string {
   return text.length > 55 ? text.slice(0, 52) + "…" : text;
 }
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 async function pushSession(id: string, title: string) {
   if (typeof window === 'undefined') return;

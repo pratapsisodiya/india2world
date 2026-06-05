@@ -17,7 +17,7 @@ import type { Source } from "@/components/setu-ai/SourceList";
 
 import { useSSE } from "@/hooks/useSSE";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 const STARTER_PROMPTS = [
   "What is the latest RoDTEP rate notification from DGFT?",

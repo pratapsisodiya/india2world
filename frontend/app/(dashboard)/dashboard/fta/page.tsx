@@ -15,7 +15,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 const FTA_DESTINATIONS = TOP_EXPORT_DESTINATIONS.filter(
   (d) => d.ftaWithIndia

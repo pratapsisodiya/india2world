@@ -24,8 +24,8 @@ import { useSavedStore } from "@/store/saved";
 import { AgentMessage, type AgentMessageData } from "@/components/setu-ai/AgentMessage";
 import { useSSE } from "@/hooks/useSSE";
 
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+// Use relative paths so the browser calls the Next.js proxy (same origin, no CORS)
+const BACKEND_URL = "";
 
 const DEFAULT_STARTER_SUGGESTIONS = [
   "How do I get an IEC code?",
@@ -778,20 +778,12 @@ function ChatInner() {
             <span className="mr-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
               AI Model:
             </span>
-            {(["openai", "gemini"] as const).map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setProvider(p)}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                  provider === p
-                    ? "bg-saffron-100 text-saffron-700 dark:bg-saffron-500/20 dark:text-saffron-300"
-                    : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 dark:text-zinc-400"
-                }`}
-              >
-                {p === "openai" ? "GPT-4o mini" : "Gemini"}
-              </button>
-            ))}
+            <button
+              type="button"
+              className="rounded-full bg-saffron-100 px-3 py-1 text-xs font-medium text-saffron-700 dark:bg-saffron-500/20 dark:text-saffron-300"
+            >
+              GPT-4o mini
+            </button>
             <button
               type="button"
               onClick={() => setResearchMode((v) => !v)}

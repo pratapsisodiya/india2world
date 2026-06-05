@@ -9,7 +9,7 @@ import { TOP_EXPORT_DESTINATIONS } from "@/app/data/exportDestinations";
 import Link from "next/link";
 import { useActivityStore } from "@/store/activity";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 function parseChecklistResponse(raw: string): DocumentItem[] | null {
   // Try direct JSON

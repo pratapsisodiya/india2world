@@ -8,7 +8,7 @@ import {
 import { cn } from "@/lib/cn";
 import { Badge } from "@/components/ui/Badge";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 const POPULAR_PRODUCTS = [
   "Basmati rice", "Handloom cotton fabric", "Turmeric powder", "Black pepper",

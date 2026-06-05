@@ -18,7 +18,7 @@ import { useActivityStore } from "@/store/activity";
 import { cn } from "@/lib/cn";
 import { useSSE } from "@/hooks/useSSE";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 function ScoreHistoryPanel() {
   const history = useUserStore((s) => s.profile.scoreHistory);

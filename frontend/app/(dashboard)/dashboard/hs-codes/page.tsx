@@ -6,7 +6,7 @@ import { HS_CHAPTERS } from "@/app/data/hsCodes";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { Badge } from "@/components/ui/Badge";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 interface HsMatch {
   chapter: string;

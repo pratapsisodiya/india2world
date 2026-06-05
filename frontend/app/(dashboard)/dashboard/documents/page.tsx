@@ -7,7 +7,7 @@ import { FileText, Plus, Trash2, Download, Loader2, AlertCircle, ChevronDown } f
 import { cn } from "@/lib/cn";
 import { useUserStore } from "@/store/user";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 const DOC_TYPES = [
   { id: "proforma-invoice", label: "Proforma Invoice", desc: "Pre-shipment quote document for buyer approval" },

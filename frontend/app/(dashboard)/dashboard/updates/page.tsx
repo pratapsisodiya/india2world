@@ -103,7 +103,7 @@ export default function UpdatesPage() {
       [id]: { ...prev[id], loading: true, error: null },
     }));
     try {
-      const url = new URL(`/api/news`, window.location.origin);
+      const url = new URL(`/api/news/exports`, window.location.origin);
       url.searchParams.set("section", id);
       if (refresh) url.searchParams.set("refresh", "1");
       const resp = await fetch(url.toString());

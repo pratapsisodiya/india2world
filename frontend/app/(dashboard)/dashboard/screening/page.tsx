@@ -5,7 +5,7 @@ import { ShieldAlert, Search, AlertTriangle, CheckCircle, XCircle } from "lucide
 import { cn } from "@/lib/cn";
 import { useUserStore } from "@/store/user";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 type EntityType = "company" | "individual" | "vessel" | "unknown";
 

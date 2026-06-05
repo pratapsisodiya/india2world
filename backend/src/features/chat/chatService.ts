@@ -1,11 +1,13 @@
 import type { Response } from "express";
+import OpenAI from "openai";
 import type { Message } from "../../types/index.js";
 import { getOpenAIClient, OPENAI_MODEL } from "../../providers/openai.js";
 import { getGeminiClient, GEMINI_MODEL } from "../../providers/gemini.js";
 import { BASE_SYSTEM_PROMPT } from "../../config/systemPrompts.js";
 import { sendSse } from "../../utils/sse.js";
+import { CHAT_TOOLS, executeTool } from "./chatTools.js";
 
-// ── OpenAI (default) ──────────────────────────────────────────────────────────
+// ── OpenAI — streaming with tool-call loop ────────────────────────────────────
 
 export async function streamOpenAI(
   messages: Message[],
@@ -16,23 +18,103 @@ export async function streamOpenAI(
   const client = getOpenAIClient();
   const systemContent = [BASE_SYSTEM_PROMPT, profileCtx].filter(Boolean).join("\n\n");
 
-  const stream = await client.chat.completions.create(
-    {
-      model: OPENAI_MODEL,
-      max_tokens: 4096,
-      messages: [{ role: "system", content: systemContent }, ...messages],
-      stream: true,
-    },
-    { signal },
-  );
+  const apiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+    { role: "system", content: systemContent },
+    ...messages,
+  ];
 
-  for await (const chunk of stream) {
-    const delta = chunk.choices[0]?.delta?.content;
-    if (delta) sendSse(res, { type: "text", text: delta });
+  // Agentic loop — re-prompt after each round of tool calls (max 5 rounds)
+  for (let round = 0; round < 5; round++) {
+    if (signal.aborted) return;
+
+    const stream = await client.chat.completions.create(
+      {
+        model: OPENAI_MODEL,
+        max_tokens: 4096,
+        messages: apiMessages,
+        tools: CHAT_TOOLS,
+        tool_choice: "auto",
+        stream: true,
+      },
+      { signal },
+    );
+
+    let finishReason: string | null = null;
+    let assistantText = "";
+    // Map from chunk index → accumulated tool call
+    const toolCallMap = new Map<number, { id: string; name: string; arguments: string }>();
+
+    for await (const chunk of stream) {
+      if (signal.aborted) return;
+      const choice = chunk.choices[0];
+      if (!choice) continue;
+
+      if (choice.finish_reason) finishReason = choice.finish_reason;
+      const delta = choice.delta;
+
+      // Stream text to the client immediately
+      if (delta.content) {
+        assistantText += delta.content;
+        sendSse(res, { type: "text", text: delta.content });
+      }
+
+      // Accumulate tool call argument chunks (they arrive in pieces)
+      if (delta.tool_calls) {
+        for (const tc of delta.tool_calls) {
+          const entry = toolCallMap.get(tc.index) ?? { id: "", name: "", arguments: "" };
+          if (tc.id) entry.id = tc.id;
+          if (tc.function?.name) entry.name = tc.function.name;
+          if (tc.function?.arguments) entry.arguments += tc.function.arguments;
+          toolCallMap.set(tc.index, entry);
+        }
+      }
+    }
+
+    // No tool calls requested — final answer is already streamed, exit
+    if (finishReason !== "tool_calls" || toolCallMap.size === 0) break;
+
+    const toolCalls = Array.from(toolCallMap.values());
+
+    // Add the assistant turn (with tool_calls) to the running history
+    apiMessages.push({
+      role: "assistant",
+      content: assistantText || null,
+      tool_calls: toolCalls.map((tc) => ({
+        id: tc.id,
+        type: "function" as const,
+        function: { name: tc.name, arguments: tc.arguments },
+      })),
+    });
+
+    // Execute each tool and add results to history
+    for (const tc of toolCalls) {
+      if (signal.aborted) return;
+
+      sendSse(res, { type: "tool_start", tool: tc.name, input: tc.arguments });
+
+      let toolResult: string;
+      try {
+        const args = JSON.parse(tc.arguments) as Record<string, unknown>;
+        toolResult = await executeTool(tc.name, args, signal);
+      } catch (err) {
+        toolResult = JSON.stringify({
+          error: err instanceof Error ? err.message : "Tool execution failed",
+        });
+      }
+
+      sendSse(res, { type: "tool_end", tool: tc.name, resultCount: 1 });
+
+      apiMessages.push({
+        role: "tool",
+        tool_call_id: tc.id,
+        content: toolResult,
+      });
+    }
+    // Loop back → model now has tool results and produces its final response
   }
 }
 
-// ── Gemini (optional) ─────────────────────────────────────────────────────────
+// ── Gemini — text-only streaming (no tool calling) ────────────────────────────
 
 export async function streamGemini(
   messages: Message[],
@@ -56,7 +138,7 @@ export async function streamGemini(
 
   const result = await chat.sendMessageStream(
     lastMessage.content,
-    signal ? { signal } as never : undefined,
+    signal ? ({ signal } as never) : undefined,
   );
 
   for await (const chunk of result.stream) {

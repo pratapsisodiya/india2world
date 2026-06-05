@@ -51,7 +51,7 @@ export function setGlobalGetToken(fn: () => Promise<string | null>) {
   globalGetToken = fn;
 }
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 async function pushProfile(profile: Partial<UserProfile>) {
   if (typeof window === 'undefined') return;

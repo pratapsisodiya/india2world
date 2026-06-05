@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Scale, Loader2, RefreshCw, ArrowRight, AlertCircle } from "lucide-react";
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+const BACKEND = "";
 
 const SECTORS = [
   "Textiles & Apparel",

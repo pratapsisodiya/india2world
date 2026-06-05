@@ -1,153 +1,143 @@
-"use client";
+'use client';
 
 import { SignIn } from "@clerk/nextjs";
 import Link from "next/link";
-import { Globe2, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen bg-zinc-50 font-sans selection:bg-orange-100 selection:text-orange-900 antialiased">
-      {/* ── Left Panel: High-End Editorial Dark ────────────────────────── */}
-      <div className="relative hidden w-full flex-col justify-between overflow-hidden bg-black p-12 lg:flex lg:w-[42%] xl:p-16 border-r border-zinc-900">
-        {/* Subtle, rich background textures */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_10%,rgba(249,115,22,0.08),transparent_40%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_90%_90%,rgba(249,115,22,0.03),transparent_35%)]" />
+    <div className="flex min-h-screen bg-[#f7f6f2] font-sans antialiased">
+      {/* Left: dark branded panel */}
+      <div className="hidden md:flex md:w-[440px] md:shrink-0 lg:w-[480px] bg-[#0f0e0c] flex-col justify-between p-10 relative overflow-hidden">
+        {/* Warm ambient glow */}
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_40%_at_20%_30%,oklch(from_#ea580c_l_c_h/0.18),transparent),radial-gradient(ellipse_50%_50%_at_80%_80%,oklch(from_#d97706_l_c_h/0.10),transparent)]" />
         
-        {/* Minimalist Grid Pattern */}
-        <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:44px_44px]" />
+        {/* Subtle grid texture */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03]" 
+          style={{ backgroundImage: 'linear-gradient(#f9f8f5 1px, transparent 1px), linear-gradient(90deg, #f9f8f5 1px, transparent 1px)', backgroundSize: '40px 40px' }} 
+        />
 
-        {/* Top Logo */}
+        {/* Brand */}
         <div className="relative z-10">
-          <Link
-            href="/"
-            className="flex w-fit items-center gap-2.5 transition-opacity hover:opacity-90"
-          >
-            <Globe2 className="h-5 w-5 text-orange-500 stroke-[1.75]" />
-            <span className="text-lg font-semibold tracking-tight text-white">
-              India2World
-            </span>
+          <Link href="/" className="inline-flex items-center gap-2.5">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="India2World logo">
+              <rect width="28" height="28" rx="8" fill="#ea580c" />
+              <path d="M8 20L20 8M20 8H11M20 8V17" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-sm font-bold tracking-tight text-[#f9f8f5]">India2World</span>
           </Link>
         </div>
 
-        {/* Center Content */}
-        <div className="relative z-10 my-auto max-w-sm">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1">
-            <span className="h-1 w-1 rounded-full bg-orange-500 animate-pulse" />
-            <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-zinc-400">
-              Global Trade Platform
-            </span>
-          </div>
-
-          <h1 className="mb-4 text-3xl font-medium tracking-tight text-white">
-            Welcome back.
-          </h1>
-
-          <p className="mb-10 text-sm leading-relaxed text-zinc-400 font-normal">
-            Access your saved schemes, FTA calculations, and compliance
-            workflows in one secure workspace.
+        {/* Middle content */}
+        <div className="relative z-10 space-y-6">
+          <h2
+            className="text-[32px] font-normal text-[#f9f8f5] leading-[1.15] tracking-tight"
+            style={{ fontFamily: "var(--font-instrument-serif), 'Instrument Serif', Georgia, serif" }}
+          >
+            Global trade,
+            <br />
+            <em className="italic text-[#fb923c]">simplified for India.</em>
+          </h2>
+          <p className="text-sm leading-relaxed text-[#847f79] max-w-xs">
+            The all-in-one workspace for IEC tracking, custom schemes, duty savings, and automated documentation.
           </p>
 
-          {/* Premium List Items */}
-          <div className="space-y-2.5">
-            {[
-              "Instant AI export guidance",
-              "Verified ITC-HS code lookups",
-              "Personalised document checklists",
-            ].map((feature, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 rounded-xl border border-white/[0.04] bg-white/[0.01] px-4 py-3 transition-colors hover:bg-white/[0.02]"
-              >
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-orange-500 stroke-[2]" />
-                <span className="text-xs font-medium text-zinc-300">
-                  {feature}
-                </span>
-              </div>
-            ))}
+          <div className="flex items-center gap-3 pt-2">
+            <div className="flex -space-x-2">
+              {['AK', 'PV', 'MS'].map((abbr) => (
+                <div
+                  key={abbr}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#0f0e0c] bg-[#1c1a17] text-[10px] font-bold text-[#a09c97]"
+                >
+                  {abbr}
+                </div>
+              ))}
+            </div>
+            <span className="text-xs font-semibold text-[#58544f]">
+              Trusted by <strong className="text-[#f9f8f5]">5,000+</strong> exporters
+            </span>
           </div>
         </div>
 
-        {/* Bottom Footer */}
-        <div className="relative z-10">
-          <p className="text-xs tracking-tight text-zinc-600">
-            © {new Date().getFullYear()} India2World. Built for global compliance.
-          </p>
+        {/* Bottom */}
+        <div className="relative z-10 text-xs text-[#58544f]">
+          © 2026 India2World. All rights reserved.
         </div>
       </div>
 
-      {/* ── Right Panel: Flat & Clean Auth Form ────────────────────────── */}
-      <div className="relative flex flex-1 flex-col items-center justify-center bg-zinc-50 p-6 sm:p-12">
-        
-        {/* Navigation Elements Header Area */}
-        <div className="absolute inset-x-0 top-0 flex items-center justify-between p-6 sm:px-12 lg:justify-end">
-          {/* Mobile Logo */}
-          <div className="lg:hidden">
-            <Link href="/" className="flex items-center gap-2 text-zinc-900">
-              <Globe2 className="h-5 w-5 text-orange-500" />
-              <span className="text-base font-semibold tracking-tight">
-                India2World
-              </span>
+      {/* Right: form */}
+      <div className="flex flex-1 flex-col items-center justify-center px-4 py-12">
+        <div className="w-full max-w-sm">
+          {/* Mobile logo */}
+          <div className="mb-8 flex justify-center md:hidden">
+            <Link href="/" className="inline-flex items-center gap-2.5">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <rect width="28" height="28" rx="8" fill="#ea580c" />
+                <path d="M8 20L20 8M20 8H11M20 8V17" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="text-sm font-bold tracking-tight text-[#1a1714]">India2World</span>
             </Link>
           </div>
 
-          {/* Back Button */}
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 shadow-sm transition-all hover:bg-zinc-50 hover:text-zinc-900"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back to website
-          </Link>
-        </div>
+          <div className="mb-7 text-center md:text-left">
+            <h1 className="text-2xl font-bold text-[#1a1714]">Welcome back</h1>
+            <p className="mt-1.5 text-sm text-[#6b6762]">Sign in to your India2World workspace.</p>
+          </div>
 
-        {/* Clerk SignIn Container */}
-        <div className="w-full max-w-[400px] mt-8 lg:mt-0">
           <SignIn
             routing="hash"
             signUpUrl="/signup"
             forceRedirectUrl="/dashboard"
             fallbackRedirectUrl="/dashboard"
             appearance={{
-              layout: {
-                socialButtonsPlacement: "bottom",
-                logoPlacement: "none",
-              },
+              layout: { socialButtonsPlacement: "top", logoPlacement: "none" },
               elements: {
                 rootBox: "w-full",
-                card: "w-full rounded-2xl bg-white p-6 border border-zinc-200/80 shadow-[0_8px_30px_rgb(0,0,0,0.02)] sm:p-8",
-
-                headerTitle: "text-xl font-semibold tracking-tight text-zinc-900",
-                headerSubtitle: "mt-1.5 text-xs font-normal text-zinc-500 leading-normal",
-
-                formFieldLabel: "mb-1 text-xs font-semibold text-zinc-700 tracking-tight",
+                card: "w-full rounded-2xl border border-[#dbd6d0] bg-white p-8 shadow-[0_4px_16px_oklch(0.15_0.01_60/0.08)]",
+                headerTitle: "hidden",
+                headerSubtitle: "hidden",
+                formFieldLabel: "mb-1 text-xs font-semibold text-[#1a1714]",
                 formFieldInput:
-                  "h-11 rounded-lg border border-zinc-200 bg-zinc-50/50 px-3 text-sm font-normal text-zinc-900 shadow-none transition-all focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-500/5",
-                formFieldInputShowPasswordButton:
-                  "text-zinc-400 hover:text-zinc-600 transition-colors",
-
+                  "h-11 rounded-lg border border-[#dbd6d0] bg-[#f9f8f5] px-3 text-sm text-[#1a1714] placeholder:text-[#a09c97] transition focus:border-[#ea580c] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#fff7ed]",
+                formFieldInputShowPasswordButton: "text-[#a09c97] hover:text-[#6b6762]",
                 formButtonPrimary:
-                  "mt-3 h-11 rounded-lg bg-orange-500 text-sm font-medium text-white shadow-sm transition-all hover:bg-orange-600 active:transform active:scale-[0.99]",
-
-                dividerLine: "bg-zinc-100",
-                dividerText:
-                  "text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-400",
-
+                  "h-11 rounded-lg bg-[#0f0e0c] text-sm font-semibold text-white transition hover:bg-[#1c1a17] hover:shadow-md",
+                dividerLine: "bg-[#e2ddd8]",
+                dividerText: "text-[10px] font-medium uppercase tracking-wider text-[#a09c97]",
                 socialButtonsBlockButton:
-                  "h-11 rounded-lg border border-zinc-200 bg-white font-medium text-zinc-700 transition-all hover:bg-zinc-50/80",
-                socialButtonsBlockButtonText: "text-xs font-medium text-zinc-600",
-
-                footerActionText: "text-xs font-normal text-zinc-500",
-                footerActionLink:
-                  "text-xs font-medium text-orange-600 hover:text-orange-700 transition-colors",
-                identityPreviewEditButton:
-                  "text-orange-600 hover:text-orange-700",
-                identityPreviewText: "text-xs font-medium text-zinc-700",
-
-                alert: "rounded-xl border border-red-100 bg-red-50/50 text-xs text-red-800",
-                formFieldErrorText: "mt-1 text-xs font-normal text-red-500",
+                  "h-10 rounded-lg border border-[#dbd6d0] bg-white text-sm text-[#1a1714] transition hover:bg-[#f9f8f5] hover:border-[#d1ccc6]",
+                socialButtonsBlockButtonText: "text-xs font-medium text-[#1a1714]",
+                footerActionText: "text-xs text-[#a09c97]",
+                footerActionLink: "text-xs font-semibold text-[#ea580c] hover:text-[#c2410c]",
+                identityPreviewText: "text-xs text-[#1a1714]",
+                identityPreviewEditButton: "text-[#ea580c] hover:text-[#c2410c]",
+                alert: "rounded-lg border border-[#ea580c]/10 bg-[#fff7ed] text-xs text-[#c2410c]",
+                formFieldErrorText: "mt-1 text-xs text-[#c2410c]",
               },
             }}
           />
+
+          <p className="mt-5 text-center text-[11px] text-[#a09c97]">
+            By signing in you agree to our{" "}
+            <Link href="#" className="underline underline-offset-2 hover:text-[#1a1714] transition">
+              Terms
+            </Link>{" "}
+            and{" "}
+            <Link href="#" className="underline underline-offset-2 hover:text-[#1a1714] transition">
+              Privacy Policy
+            </Link>
+            .
+          </p>
+
+          <div className="mt-5 flex justify-center md:justify-start">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-[#a09c97] transition hover:text-[#1a1714]"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Back to home
+            </Link>
+          </div>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useUser, useAuth } from "@clerk/nextjs";
 import { useUserStore, setGlobalGetToken } from "@/store/user";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = "";
 
 export function UserSync() {
   const { user, isLoaded } = useUser();
