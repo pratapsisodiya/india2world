@@ -78,7 +78,7 @@ export function MobileNav({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col bg-white shadow-xl dark:bg-zinc-950 overflow-hidden"
+            className="fixed right-0 top-0 z-50 flex h-full w-72 flex-col bg-white shadow-xl dark:bg-zinc-950 overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
           >
             {/* Tricolor top stripe */}
             <div className="h-0.5 w-full shrink-0" style={{ background: "linear-gradient(to right, #FF9933 33.333%, #ffffff 33.333% 66.666%, #138808 66.666%)" }} />

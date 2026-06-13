@@ -26,7 +26,7 @@ export function BottomNav() {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-zinc-200 bg-white/95 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/95 lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-zinc-200 bg-white/95 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/95 lg:hidden pb-[env(safe-area-inset-bottom)]">
         <nav aria-label="Mobile navigation" className="mx-auto flex max-w-lg items-center justify-around px-2 py-1.5">
           {tabs.map((tab) => {
             const active =
