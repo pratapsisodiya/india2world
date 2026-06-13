@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter, Instrument_Serif } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { HapticsProvider } from "@/providers/HapticsProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -103,7 +104,9 @@ export default function RootLayout({
       </head>
       <body className="h-full flex flex-col">
         <ClerkProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <HapticsProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </HapticsProvider>
         </ClerkProvider>
       </body>
     </html>
