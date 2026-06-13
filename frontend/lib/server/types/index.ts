@@ -158,6 +158,7 @@ export interface SchemeRecommendation {
 }
 
 export interface SchemeMatcherResponse {
+  analysisSteps: string[];
   recommended: SchemeRecommendation[];
   notRecommended: Array<{ schemeId: string; reason: string }>;
   profileGaps: string[];
@@ -178,6 +179,7 @@ export interface HsMatch {
 }
 
 export interface HsClassifierResponse {
+  classificationSteps: string[];
   topMatches: HsMatch[];
   clarificationNeeded?: string;
   generalGuidance: string;
@@ -200,6 +202,7 @@ export interface Buyer {
 }
 
 export interface BuyerFinderResponse {
+  marketAnalysis: string[];
   buyers: Buyer[];
   searchSummary: string;
   outreachTips: string[];
@@ -211,6 +214,7 @@ export type DocGeneratorRequest = z.infer<typeof DocGeneratorRequestSchema>;
 export type ComplianceScreeningRequest = z.infer<typeof ComplianceScreeningRequestSchema>;
 
 export interface ComplianceScreeningResponse {
+  screeningSteps: string[];
   status: "clear" | "warning" | "blocked";
   riskScore: number;
   matchedLists: string[];

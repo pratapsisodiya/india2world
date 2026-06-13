@@ -29,6 +29,9 @@ import {
   Users,
   CalendarDays,
   Banknote,
+  Package,
+  Mail,
+  Ship,
 } from "lucide-react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { cn } from "@/lib/cn";
@@ -64,6 +67,10 @@ const ACTIVITY_ICONS: Record<string, typeof Clock> = {
   saved: Bookmark,
   research: Sparkles,
   updates: Newspaper,
+  "landed-cost": Package,
+  outreach: Mail,
+  finance: Banknote,
+  "shipment-guide": Ship,
 };
 
 const sidebarGroups = [
@@ -98,7 +105,16 @@ const sidebarGroups = [
           { href: "/dashboard/fta", label: "FTA Advantage", icon: Globe2 },
           { href: "/dashboard/compare", label: "Market Comparison", icon: Scale },
           { href: "/dashboard/pricing", label: "Pricing Calculator", icon: DollarSign },
+          { href: "/dashboard/landed-cost", label: "Landed Cost", icon: Package },
           { href: "/dashboard/currency", label: "Currency Converter", icon: Banknote },
+          { href: "/dashboard/finance", label: "Export Finance", icon: TrendingUp },
+        ],
+      },
+      {
+        label: "Growth",
+        links: [
+          { href: "/dashboard/outreach", label: "Buyer Outreach", icon: Mail },
+          { href: "/dashboard/shipment-guide", label: "Shipment Guide", icon: Ship },
         ],
       },
     ],

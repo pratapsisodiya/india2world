@@ -10,8 +10,13 @@ const cache = new TtlCache<BuyerFinderResponse>(30 * 60 * 1000); // 30 min
 const SYSTEM_PROMPT = `You are an expert at finding genuine importers and buyers for Indian export products.
 Given a product, target country, and web search results, extract real potential buyers.
 
-Return ONLY this JSON (no markdown fences):
+First perform a market analysis, then return ONLY this JSON (no markdown fences):
 {
+  "marketAnalysis": [
+    "Step 1: Analyze overall market demand for this product in the target country",
+    "Step 2: Identify typical buyer profiles (e.g., wholesalers, supermarkets, industrial buyers)",
+    "Step 3: Evaluate the search results against these profiles"
+  ],
   "buyers": [
     {
       "companyName": "Acme Imports Ltd",

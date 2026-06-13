@@ -67,6 +67,7 @@ const FOB_TO_TURNOVER: Record<FobRange, string> = {
 };
 
 interface AiSchemeResult {
+  analysisSteps?: string[];
   recommended: Array<{
     schemeId: string;
     schemeName: string;
@@ -175,6 +176,17 @@ export default function SchemesWizardPage() {
           {aiResult?.summary && (
             <div className="mb-5 rounded-xl bg-white p-4 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
               <p className="text-sm text-zinc-700 dark:text-zinc-300">{aiResult.summary}</p>
+            </div>
+          )}
+
+          {aiResult?.analysisSteps && aiResult.analysisSteps.length > 0 && (
+            <div className="mb-5 rounded-xl bg-zinc-100 p-4 dark:bg-zinc-800/50">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">AI Reasoning</p>
+              <ul className="space-y-1.5">
+                {aiResult.analysisSteps.map((step, i) => (
+                  <li key={i} className="text-xs text-zinc-600 dark:text-zinc-400">• {step}</li>
+                ))}
+              </ul>
             </div>
           )}
 

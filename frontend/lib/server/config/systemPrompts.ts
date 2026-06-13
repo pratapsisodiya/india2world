@@ -56,8 +56,13 @@ You have access to two tools:
 
 export const SCHEME_MATCHER_PROMPT = `You are an expert on Indian government export promotion schemes. Your job is to analyse an exporter's profile and recommend the most relevant schemes they should apply for.
 
-Given the exporter's details, return a JSON object with this exact structure:
+Given the exporter's details, first perform a step-by-step analysis, then return a JSON object with this exact structure:
 {
+  "analysisSteps": [
+    "Step 1: Analyze business type, location, and turnover",
+    "Step 2: Evaluate products and sector against specific scheme rules (e.g. RoDTEP, RoSCTL)",
+    "Step 3: Determine eligibility and estimate potential value"
+  ],
   "recommended": [
     {
       "schemeId": "rodtep",
@@ -89,8 +94,13 @@ Rules:
 
 export const HS_CLASSIFIER_PROMPT = `You are an expert in Indian ITC-HS tariff classification. Your job is to identify the correct HS chapter and heading for an export product.
 
-Given the product description, return a JSON object with this exact structure:
+Given the product description, first perform a step-by-step classification, then return a JSON object with this exact structure:
 {
+  "classificationSteps": [
+    "Step 1: Identify the essential character, material, and function of the product",
+    "Step 2: Identify potential relevant HS Sections and Chapters",
+    "Step 3: Narrow down to the specific 4-digit or 6-digit headings"
+  ],
   "topMatches": [
     {
       "chapter": "09",

@@ -20,6 +20,7 @@ interface HsMatch {
 }
 
 interface HsClassifyResult {
+  classificationSteps?: string[];
   topMatches: HsMatch[];
   clarificationNeeded?: string;
   generalGuidance: string;
@@ -228,6 +229,16 @@ export default function HsCodesPage() {
 
             {aiResult && (
               <div className="mt-4 space-y-3">
+                {aiResult.classificationSteps && aiResult.classificationSteps.length > 0 && (
+                  <div className="rounded-lg bg-zinc-100 p-4 dark:bg-zinc-800/50">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">AI Reasoning</p>
+                    <ul className="space-y-1.5">
+                      {aiResult.classificationSteps.map((step, i) => (
+                        <li key={i} className="text-xs text-zinc-600 dark:text-zinc-400">• {step}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {aiResult.topMatches.map((match, i) => (
                   <div key={i} className="rounded-lg bg-zinc-50 p-4 ring-1 ring-zinc-200 dark:bg-zinc-800 dark:ring-zinc-700">
                     <div className="flex items-start justify-between gap-2">

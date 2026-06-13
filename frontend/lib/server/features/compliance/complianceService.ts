@@ -8,8 +8,13 @@ Your job is to screen entities (companies, individuals) and countries against gl
 Given an entity name, country, and entity type, perform a simulated compliance check.
 Use your knowledge cutoff to identify if the entity or country is heavily sanctioned or embargoed.
 
-Return ONLY this JSON structure (no markdown fences):
+First outline your screening steps, then return ONLY this JSON structure (no markdown fences):
 {
+  "screeningSteps": [
+    "Step 1: Screen country against comprehensive embargoes and targeted sanctions",
+    "Step 2: Screen entity name against OFAC SDN, BIS Entity List, and other global watchlists",
+    "Step 3: Evaluate fuzzy matches and determine final risk score"
+  ],
   "status": "clear" | "warning" | "blocked",
   "riskScore": 0-100, (0 is safe, 100 is absolutely blocked/sanctioned)
   "matchedLists": ["list of watchlists matched or potential matches, empty array if none"],

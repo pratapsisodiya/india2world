@@ -35,6 +35,7 @@ interface Buyer {
 }
 
 interface BuyerFinderResponse {
+  marketAnalysis?: string[];
   buyers: Buyer[];
   searchSummary: string;
   outreachTips: string[];
@@ -282,6 +283,18 @@ export default function BuyerFinderPage() {
             <div className="rounded-xl bg-white p-4 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
               <p className="text-sm text-zinc-700 dark:text-zinc-300">{result.searchSummary}</p>
             </div>
+
+            {/* Analysis Steps */}
+            {result.marketAnalysis && result.marketAnalysis.length > 0 && (
+              <div className="rounded-xl bg-zinc-100 p-4 dark:bg-zinc-800/50">
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">Market Analysis</h3>
+                <ul className="space-y-1.5">
+                  {result.marketAnalysis.map((step, i) => (
+                    <li key={i} className="text-sm text-zinc-600 dark:text-zinc-400">• {step}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Buyers */}
             <div>

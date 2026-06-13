@@ -28,6 +28,9 @@ import {
   Truck,
   MapPin,
   BarChart3,
+  Mail,
+  Ship,
+  Banknote,
 } from "lucide-react";
 
 import { WelcomeHeader } from "@/components/dashboard/WelcomeHeader";
@@ -144,6 +147,38 @@ const quickActions = [
     href: "/dashboard/saved",
     icon: Bookmark,
     color: "bg-violet-100 text-violet-600 dark:bg-violet-900/40 dark:text-violet-400",
+  },
+  {
+    title: "Landed Cost Calculator",
+    description: "Calculate your buyer's total landed cost including import duties, GST/VAT, and local charges.",
+    href: "/dashboard/landed-cost",
+    icon: Package,
+    color: "bg-teal-100 text-teal-600 dark:bg-teal-900/40 dark:text-teal-400",
+    highlight: true,
+  },
+  {
+    title: "Buyer Outreach Templates",
+    description: "AI-generated cold emails, quotation letters, and follow-up sequences for international buyers.",
+    href: "/dashboard/outreach",
+    icon: Mail,
+    color: "bg-pink-100 text-pink-600 dark:bg-pink-900/40 dark:text-pink-400",
+    highlight: true,
+  },
+  {
+    title: "Export Finance Hub",
+    description: "Explore ECGC insurance, pre/post-shipment credit calculators, and EXIM Bank schemes.",
+    href: "/dashboard/finance",
+    icon: Banknote,
+    color: "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400",
+    highlight: true,
+  },
+  {
+    title: "Shipment Process Guide",
+    description: "Step-by-step walkthrough from PO to payment realization — sea, air, and courier.",
+    href: "/dashboard/shipment-guide",
+    icon: Ship,
+    color: "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400",
+    highlight: true,
   },
 ];
 

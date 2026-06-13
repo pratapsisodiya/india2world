@@ -10,6 +10,7 @@ const BACKEND_URL = "";
 type EntityType = "company" | "individual" | "vessel" | "unknown";
 
 interface ScreeningResponse {
+  screeningSteps?: string[];
   status: "clear" | "warning" | "blocked";
   riskScore: number;
   matchedLists: string[];
@@ -189,6 +190,19 @@ export default function RestrictedPartyScreeningPage() {
                 </div>
 
                 <div className="space-y-4 flex-1">
+                  {result.screeningSteps && result.screeningSteps.length > 0 && (
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">
+                        AI Reasoning
+                      </h4>
+                      <ul className="space-y-1 mt-2">
+                        {result.screeningSteps.map((step, i) => (
+                          <li key={i} className="text-sm text-zinc-700 dark:text-zinc-300">• {step}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   <div>
                     <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">
                       Matched Lists
