@@ -39,6 +39,7 @@ import { NextSteps } from "@/components/dashboard/NextSteps";
 import { SectorInsight } from "@/components/dashboard/SectorInsight";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { ExportTipBanner } from "@/components/dashboard/ExportTipBanner";
+import { DailyTip } from "@/components/dashboard/DailyTip";
 import { useUserStore } from "@/store/user";
 import { useActivityStore } from "@/store/activity";
 import { useChatStore } from "@/store/chat";
@@ -182,6 +183,41 @@ const quickActions = [
   },
 ];
 
+// ─── Trending Searches ───────────────────────────────────────────────────────
+
+const TRENDING = [
+  { label: "RoDTEP rates 2025", q: "What are the latest RoDTEP rates for 2025?" },
+  { label: "India-UK FTA update", q: "What is the latest status of India-UK FTA negotiations?" },
+  { label: "EPCG eligibility", q: "Who is eligible for EPCG scheme in India?" },
+  { label: "HS code for spices", q: "What is the HS code for spices export from India?" },
+  { label: "GST LUT filing", q: "How to file GST LUT for exports in 2025?" },
+  { label: "AD Code registration", q: "How to register AD code with bank for export?" },
+  { label: "DGFT IEC update", q: "How to update IEC on DGFT portal?" },
+  { label: "UAE CEPA benefits", q: "What are the benefits of India-UAE CEPA for exporters?" },
+];
+
+function TrendingSearches() {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+        🔥 Trending
+      </span>
+      <div className="flex flex-1 gap-2 overflow-x-auto pb-0.5 no-scrollbar">
+        {TRENDING.map((t) => (
+          <Link
+            key={t.label}
+            href={`/dashboard/chat?q=${encodeURIComponent(t.q)}`}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 ring-1 ring-zinc-200 transition-all hover:-translate-y-0.5 hover:ring-saffron-300 hover:text-saffron-700 dark:bg-zinc-900 dark:text-zinc-300 dark:ring-zinc-800 dark:hover:ring-saffron-500/40 dark:hover:text-saffron-400"
+          >
+            <span className="text-[10px]">🔍</span>
+            {t.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const sectors = [
   { emoji: "🧵", title: "Textiles & apparel" },
   { emoji: "🎨", title: "Handicrafts" },
@@ -312,12 +348,35 @@ function NextBestAction() {
   );
 }
 
+// Stage unlock hints — what to do to advance
+const STAGE_UNLOCK_HINTS: Record<string, { hint: string; href: string }[]> = {
+  planning: [
+    { hint: "Get your IEC code from DGFT", href: "/dashboard/chat?q=How to apply for IEC code?" },
+    { hint: "Complete export readiness score", href: "/dashboard/readiness" },
+  ],
+  registered: [
+    { hint: "Match your first government scheme", href: "/dashboard/schemes/wizard" },
+    { hint: "Generate your document checklist", href: "/dashboard/checklist" },
+  ],
+  "first-shipment": [
+    { hint: "Calculate FTA duty savings", href: "/dashboard/fta" },
+    { hint: "Research your target market", href: "/dashboard/research" },
+  ],
+  scaling: [
+    { hint: "Explore new country profiles", href: "/dashboard/countries" },
+    { hint: "Compare two markets side-by-side", href: "/dashboard/compare" },
+  ],
+};
+
 function ExportPipeline() {
   const profile = useUserStore((s) => s.profile);
   const currentStageIndex = EXPORT_PIPELINE_STAGES.findIndex(
     (s) => s.id === profile.exportStage
   );
   const activeIndex = currentStageIndex === -1 ? 0 : currentStageIndex;
+  const progressPct = Math.round((activeIndex / (EXPORT_PIPELINE_STAGES.length - 1)) * 100);
+  const currentStageId = EXPORT_PIPELINE_STAGES[activeIndex]?.id ?? "planning";
+  const hints = STAGE_UNLOCK_HINTS[currentStageId] ?? [];
 
   return (
     <div className="overflow-hidden rounded-2xl bg-white ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800">
@@ -326,19 +385,30 @@ function ExportPipeline() {
         <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
           Export journey
         </span>
+        <span className="ml-auto text-[10px] font-semibold text-saffron-600 dark:text-saffron-400">
+          {progressPct}% complete
+        </span>
         <Link
           href="/dashboard/settings"
-          className="ml-auto text-[10px] font-medium text-zinc-400 hover:text-saffron-600 dark:hover:text-saffron-400 transition-colors"
+          className="text-[10px] font-medium text-zinc-400 hover:text-saffron-600 dark:hover:text-saffron-400 transition-colors"
         >
-          Update stage →
+          Update →
         </Link>
       </div>
+
+      {/* Animated progress bar */}
+      <div className="h-1 w-full bg-zinc-100 dark:bg-zinc-800">
+        <div
+          className="h-full bg-linear-to-r from-saffron-400 to-india-green-500 transition-all duration-1000 ease-out"
+          style={{ width: `${progressPct}%` }}
+        />
+      </div>
+
       <div className="flex items-start gap-0 p-4 sm:p-5 overflow-x-auto">
         {EXPORT_PIPELINE_STAGES.map((stage, i) => {
           const Icon = stage.icon;
           const isCompleted = i < activeIndex;
           const isActive = i === activeIndex;
-          const isUpcoming = i > activeIndex;
 
           return (
             <div key={stage.id} className="flex flex-1 items-start min-w-0">
@@ -347,7 +417,7 @@ function ExportPipeline() {
                   isCompleted
                     ? "bg-india-green-500 ring-india-green-200 dark:ring-india-green-900"
                     : isActive
-                    ? "bg-saffron-500 ring-saffron-200 dark:ring-saffron-900 shadow-[0_0_12px_rgba(255,153,51,0.35)]"
+                    ? "bg-saffron-500 ring-saffron-200 dark:ring-saffron-900 shadow-[0_0_16px_rgba(255,153,51,0.4)]"
                     : "bg-zinc-100 ring-zinc-200 dark:bg-zinc-800 dark:ring-zinc-700"
                 }`}>
                   {isCompleted ? (
@@ -368,14 +438,37 @@ function ExportPipeline() {
                 </div>
               </div>
               {i < EXPORT_PIPELINE_STAGES.length - 1 && (
-                <div className={`mt-4 h-0.5 flex-1 self-start transition-colors ${
-                  i < activeIndex ? "bg-india-green-400" : "bg-zinc-200 dark:bg-zinc-700"
+                <div className={`mt-4 h-0.5 flex-1 self-start transition-all duration-700 ${
+                  i < activeIndex
+                    ? "bg-linear-to-r from-india-green-400 to-india-green-300"
+                    : "bg-zinc-200 dark:bg-zinc-700"
                 }`} />
               )}
             </div>
           );
         })}
       </div>
+
+      {/* Stage unlock hints */}
+      {hints.length > 0 && (
+        <div className="border-t border-zinc-100 px-5 py-3 dark:border-zinc-800">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+            To advance to next stage:
+          </p>
+          <div className="flex flex-col gap-1.5">
+            {hints.map((h) => (
+              <Link
+                key={h.hint}
+                href={h.href}
+                className="group flex items-center gap-2 text-xs text-zinc-600 hover:text-saffron-600 dark:text-zinc-400 dark:hover:text-saffron-400 transition-colors"
+              >
+                <ChevronRight className="h-3 w-3 shrink-0 text-zinc-300 group-hover:text-saffron-400 transition-colors" />
+                {h.hint}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -570,9 +663,15 @@ export default function DashboardPage() {
           <QuickStats />
         </div>
 
-        {/* Export tip banner */}
-        <div className="mt-6">
+        {/* Trending Searches */}
+        <div className="mt-5">
+          <TrendingSearches />
+        </div>
+
+        {/* Export tip banner + Daily Tip in a 2-col grid */}
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
           <ExportTipBanner />
+          <DailyTip />
         </div>
 
         {/* Next best action — context-aware */}

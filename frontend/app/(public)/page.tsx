@@ -289,17 +289,78 @@ export default function HomePage() {
             >
               <span className="trust-item">
                 <Icon name="shield-check" size={14} />
-                Enterprise-grade security
+                DGFT &amp; CBIC aligned
               </span>
               <span className="trust-item">
                 <Icon name="zap" size={14} />
-                Real-time compliance
+                Instant AI answers
               </span>
               <span className="trust-item">
                 <Icon name="clock" size={14} />
                 Updated weekly
               </span>
             </motion.div>
+
+            {/* Live stats strip — animated counters */}
+            <motion.div
+              custom={4.5}
+              initial="hidden"
+              animate="visible"
+              variants={fadeUpVariants}
+              style={{
+                display: 'flex',
+                gap: '0',
+                marginTop: '1.5rem',
+                borderRadius: '1rem',
+                overflow: 'hidden',
+                border: '1px solid rgba(255,153,51,0.2)',
+                background: 'rgba(255,153,51,0.04)',
+              }}
+            >
+              {[
+                { value: 12400, suffix: '+', label: 'Indian Exporters', emoji: '🏭' },
+                { value: 48, suffix: '', label: 'Gov. Schemes Mapped', emoji: '📋' },
+                { value: 14, suffix: '', label: 'FTAs Covered', emoji: '🤝' },
+                { value: 100, suffix: '+', label: 'Country Profiles', emoji: '🌍' },
+              ].map((stat, i) => (
+                <div
+                  key={stat.label}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    padding: '0.875rem 0.5rem',
+                    borderRight: i < 3 ? '1px solid rgba(255,153,51,0.15)' : 'none',
+                    gap: '0.125rem',
+                  }}
+                >
+                  <span style={{ fontSize: '1rem' }}>{stat.emoji}</span>
+                  <span
+                    data-counter={stat.value}
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 800,
+                      letterSpacing: '-0.03em',
+                      color: 'var(--color-primary)',
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    0
+                  </span>
+                  <span style={{
+                    fontSize: '0.65rem',
+                    color: 'var(--color-text-muted)',
+                    textAlign: 'center',
+                    lineHeight: 1.3,
+                    fontWeight: 500,
+                  }}>
+                    {stat.label}{stat.suffix}
+                  </span>
+                </div>
+              ))}
+            </motion.div>
+
 
             {/* Product Preview */}
             <motion.div 
