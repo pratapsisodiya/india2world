@@ -492,13 +492,16 @@ export function Sidebar() {
                                       key={link.href}
                                       href={link.href}
                                       className={cn(
-                                        "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
+                                        "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-all active:scale-[0.97]",
                                         active
                                           ? "bg-saffron-50 text-saffron-700 dark:bg-saffron-500/15 dark:text-saffron-400"
                                           : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200"
                                       )}
                                     >
-                                      <Icon className="h-4 w-4 shrink-0" />
+                                      {active && (
+                                        <span className="absolute left-0 top-1 bottom-1 w-0.5 rounded-full bg-saffron-500" />
+                                      )}
+                                      <Icon className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
                                       <span className="flex-1">{link.label}</span>
                                       {isNew && !active && (
                                         <span className="rounded-full bg-saffron-500 px-1.5 py-0.5 text-[8px] font-bold text-white uppercase">NEW</span>
@@ -531,13 +534,16 @@ export function Sidebar() {
                             key={link.href}
                             href={link.href}
                             className={cn(
-                              "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
+                              "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-all active:scale-[0.97]",
                               active
                                 ? "bg-saffron-50 text-saffron-700 dark:bg-saffron-500/15 dark:text-saffron-400"
                                 : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200"
                             )}
                           >
-                            <Icon className="h-4 w-4 shrink-0" />
+                            {active && (
+                              <span className="absolute left-0 top-1 bottom-1 w-0.5 rounded-full bg-saffron-500" />
+                            )}
+                            <Icon className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
                             <span className="flex-1">{link.label}</span>
                             {isNew && !active && (
                               <span className="rounded-full bg-saffron-500 px-1.5 py-0.5 text-[8px] font-bold text-white uppercase">NEW</span>
@@ -563,17 +569,17 @@ export function Sidebar() {
         {isWide ? (
           <Link
             href="/dashboard/chat"
-            className="mt-auto flex items-center justify-center gap-2 rounded-xl bg-saffron-500/10 border border-saffron-200/50 dark:border-saffron-500/20 px-3 py-2.5 text-xs font-semibold text-saffron-700 dark:text-saffron-400 hover:bg-saffron-500/15 transition-colors"
+            className="group mt-auto flex items-center justify-center gap-2 rounded-xl bg-saffron-500/10 border border-saffron-200/50 dark:border-saffron-500/20 px-3 py-2.5 text-xs font-semibold text-saffron-700 dark:text-saffron-400 hover:bg-saffron-500/20 hover:border-saffron-300 dark:hover:border-saffron-500/40 hover:shadow-sm transition-all active:scale-[0.97]"
           >
-            <MessageSquare className="h-3.5 w-3.5" />
+            <MessageSquare className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
             New AI Chat
-            <ArrowRight className="h-3 w-3 ml-auto" />
+            <ArrowRight className="h-3 w-3 ml-auto transition-transform group-hover:translate-x-0.5" />
           </Link>
         ) : (
           <Link
             href="/dashboard/chat"
             aria-label="New AI Chat"
-            className="mt-auto flex h-8 w-8 items-center justify-center rounded-xl bg-saffron-500/10 text-saffron-600 hover:bg-saffron-500/20 dark:text-saffron-400 transition-colors"
+            className="mt-auto flex h-8 w-8 items-center justify-center rounded-xl bg-saffron-500/10 text-saffron-600 hover:bg-saffron-500/20 dark:text-saffron-400 transition-all active:scale-[0.95] hover:shadow-sm animate-glow-pulse"
           >
             <MessageSquare className="h-4 w-4" />
           </Link>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -55,19 +56,32 @@ export function BottomNav() {
                     : "text-zinc-400 dark:text-zinc-500"
                 )}
               >
-                <div className="relative">
-                  <Icon className={cn("h-5 w-5 transition-transform", active && "scale-110")} />
+                <motion.div
+                  className="relative"
+                  animate={{ scale: active ? 1.1 : 1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                >
+                  <Icon className="h-5 w-5" />
                   {showBadge && (
                     <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-saffron-500 px-0.5 text-[8px] font-bold text-white">
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                   )}
-                </div>
+                </motion.div>
                 <span className="text-[10px] font-medium">{tab.label}</span>
-                {/* Active indicator dot */}
-                {active && (
-                  <span className="absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-saffron-500" />
-                )}
+                {/* Active indicator dot — animated */}
+                <AnimatePresence>
+                  {active && (
+                    <motion.span
+                      layoutId="bottom-nav-dot"
+                      className="absolute bottom-0.5 left-1/2 h-1 w-4 -translate-x-1/2 rounded-full bg-saffron-500"
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </AnimatePresence>
               </Link>
             );
           })}

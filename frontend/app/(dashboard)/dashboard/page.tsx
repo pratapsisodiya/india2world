@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   MessageSquare,
@@ -204,14 +205,20 @@ function TrendingSearches() {
       </span>
       <div className="flex flex-1 gap-2 overflow-x-auto pb-0.5 no-scrollbar">
         {TRENDING.map((t) => (
-          <Link
+          <motion.div
             key={t.label}
-            href={`/dashboard/chat?q=${encodeURIComponent(t.q)}`}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 ring-1 ring-zinc-200 transition-all hover:-translate-y-0.5 hover:ring-saffron-300 hover:text-saffron-700 dark:bg-zinc-900 dark:text-zinc-300 dark:ring-zinc-800 dark:hover:ring-saffron-500/40 dark:hover:text-saffron-400"
+            whileHover={{ y: -2, scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 22 }}
           >
-            <span className="text-[10px]">🔍</span>
-            {t.label}
-          </Link>
+            <Link
+              href={`/dashboard/chat?q=${encodeURIComponent(t.q)}`}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 ring-1 ring-zinc-200 transition-shadow hover:shadow-sm hover:ring-saffron-300 hover:text-saffron-700 dark:bg-zinc-900 dark:text-zinc-300 dark:ring-zinc-800 dark:hover:ring-saffron-500/40 dark:hover:text-saffron-400"
+            >
+              <span className="text-[10px]">🔍</span>
+              {t.label}
+            </Link>
+          </motion.div>
         ))}
       </div>
     </div>
@@ -698,12 +705,14 @@ export default function DashboardPage() {
                 <span className="text-xl">{m.flag}</span>
                 <span className="w-20 text-sm font-semibold text-zinc-900 dark:text-zinc-50">{m.market}</span>
                 <span className="flex-1 text-sm text-zinc-500 dark:text-zinc-400">{m.note}</span>
-                <Link
-                  href={`/dashboard/chat?q=${encodeURIComponent(`Tell me about exporting to ${m.market} from India`)}`}
-                  className="shrink-0 rounded-lg bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700 transition-colors hover:bg-saffron-100 hover:text-saffron-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-saffron-900/30 dark:hover:text-saffron-400"
-                >
-                  Ask AI
-                </Link>
+                <motion.div whileTap={{ scale: 0.93 }} whileHover={{ scale: 1.04 }} transition={{ type: "spring", stiffness: 400, damping: 22 }}>
+                  <Link
+                    href={`/dashboard/chat?q=${encodeURIComponent(`Tell me about exporting to ${m.market} from India`)}`}
+                    className="shrink-0 rounded-lg bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700 transition-colors hover:bg-saffron-100 hover:text-saffron-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-saffron-900/30 dark:hover:text-saffron-400"
+                  >
+                    Ask AI
+                  </Link>
+                </motion.div>
               </div>
             ))}
           </div>
@@ -729,35 +738,50 @@ export default function DashboardPage() {
             <span className="rounded-full bg-saffron-500 px-2 py-0.5 text-[10px] font-semibold text-white">NEW</span>
             <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">All tools</span>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <motion.div
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-40px" }}
+            variants={{ visible: { transition: { staggerChildren: 0.055 } } }}
+          >
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
-                <Link
+                <motion.div
                   key={action.href}
-                  href={action.href}
-                  className={`group flex items-start gap-4 rounded-2xl bg-white p-6 ring-1 transition-all hover:-translate-y-0.5 hover:shadow-md dark:bg-zinc-900 ${
-                    "highlight" in action && action.highlight
-                      ? "ring-saffron-200 hover:ring-saffron-300 dark:ring-saffron-500/20 dark:hover:ring-saffron-500/40"
-                      : "ring-zinc-200 hover:ring-zinc-300 dark:ring-zinc-800 dark:hover:ring-zinc-700"
-                  }`}
+                  variants={{
+                    hidden:  { opacity: 0, y: 14, scale: 0.97 },
+                    visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 280, damping: 22 } },
+                  }}
+                  whileHover={{ y: -3, transition: { type: "spring", stiffness: 400, damping: 22 } }}
+                  whileTap={{ scale: 0.97, y: 0, transition: { duration: 0.1 } }}
                 >
-                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${action.color}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-                      {action.title}
-                    </h3>
-                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                      {action.description}
-                    </p>
-                  </div>
-                  <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-zinc-400 transition-transform group-hover:translate-x-0.5" />
-                </Link>
+                  <Link
+                    href={action.href}
+                    className={`group flex h-full items-start gap-4 rounded-2xl bg-white p-6 ring-1 transition-shadow hover:shadow-md dark:bg-zinc-900 ${
+                      "highlight" in action && action.highlight
+                        ? "ring-saffron-200 hover:ring-saffron-300 dark:ring-saffron-500/20 dark:hover:ring-saffron-500/40"
+                        : "ring-zinc-200 hover:ring-zinc-300 dark:ring-zinc-800 dark:hover:ring-zinc-700"
+                    }`}
+                  >
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform duration-200 group-hover:scale-110 ${action.color}`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+                        {action.title}
+                      </h3>
+                      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                        {action.description}
+                      </p>
+                    </div>
+                    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-zinc-400 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
 
         {/* Why India2World */}
@@ -765,21 +789,32 @@ export default function DashboardPage() {
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-400">
             Why India2World
           </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <motion.div
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-30px" }}
+            variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
+          >
             {whyCards.map((c) => {
               const Icon = c.icon;
               return (
-                <div
+                <motion.div
                   key={c.title}
+                  variants={{
+                    hidden:  { opacity: 0, y: 12 },
+                    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } },
+                  }}
+                  whileHover={{ y: -2, transition: { type: "spring", stiffness: 400, damping: 22 } }}
                   className={`rounded-2xl border bg-linear-to-br p-5 ${c.color}`}
                 >
                   <Icon className="mb-3 h-5 w-5" />
                   <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">{c.title}</h3>
                   <p className="mt-1 text-xs leading-5 text-zinc-600 dark:text-zinc-400">{c.desc}</p>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
 
         {/* Sector insight */}
@@ -792,20 +827,35 @@ export default function DashboardPage() {
           <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
             Export sectors
           </h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <motion.div
+            className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-20px" }}
+            variants={{ visible: { transition: { staggerChildren: 0.06 } } }}
+          >
             {sectors.map((s) => (
-              <Link
+              <motion.div
                 key={s.title}
-                href={`/dashboard/chat?q=${encodeURIComponent(`I want to export ${s.title.toLowerCase()} from India. What do I need to know?`)}`}
-                className="flex flex-col items-center gap-2 rounded-xl bg-white p-4 text-center ring-1 ring-zinc-200 transition-all hover:-translate-y-0.5 hover:shadow-sm hover:ring-zinc-300 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:ring-zinc-700"
+                variants={{
+                  hidden:  { opacity: 0, scale: 0.94 },
+                  visible: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 320, damping: 22 } },
+                }}
+                whileHover={{ y: -3, scale: 1.02, transition: { type: "spring", stiffness: 400, damping: 20 } }}
+                whileTap={{ scale: 0.96, transition: { duration: 0.1 } }}
               >
-                <span className="text-2xl">{s.emoji}</span>
-                <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                  {s.title}
-                </span>
-              </Link>
+                <Link
+                  href={`/dashboard/chat?q=${encodeURIComponent(`I want to export ${s.title.toLowerCase()} from India. What do I need to know?`)}`}
+                  className="flex flex-col items-center gap-2 rounded-xl bg-white p-4 text-center ring-1 ring-zinc-200 transition-shadow hover:shadow-sm hover:ring-zinc-300 dark:bg-zinc-900 dark:ring-zinc-800 dark:hover:ring-zinc-700"
+                >
+                  <span className="text-2xl transition-transform duration-200 group-hover:scale-110">{s.emoji}</span>
+                  <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                    {s.title}
+                  </span>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* Recent activity */}

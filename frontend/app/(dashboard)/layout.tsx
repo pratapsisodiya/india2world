@@ -4,6 +4,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { UserSync } from "@/components/auth/UserSync";
 import { CurrencyTicker } from "@/components/layout/CurrencyTicker";
 import { ToastProvider } from "@/components/ui/Toast";
+import { PageTransition } from "@/components/ui/PageTransition";
 
 export default function DashboardLayout({
   children,
@@ -19,7 +20,7 @@ export default function DashboardLayout({
         <Sidebar />
         <main className="flex flex-1 flex-col overflow-y-auto pb-16 lg:pb-0">
           <Breadcrumbs />
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
       </div>
       <BottomNav />

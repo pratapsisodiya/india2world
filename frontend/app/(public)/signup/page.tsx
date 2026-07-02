@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useEffect } from "react";
 import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -21,6 +22,24 @@ const TESTIMONIAL = {
 };
 
 export default function SignupPage() {
+  const leftPanelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const panel = leftPanelRef.current;
+    if (!panel) return;
+
+    function handleMove(e: MouseEvent) {
+      const rect = panel!.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      panel!.style.setProperty("--glow-x", `${x}%`);
+      panel!.style.setProperty("--glow-y", `${y}%`);
+    }
+
+    panel.addEventListener("mousemove", handleMove);
+    return () => panel.removeEventListener("mousemove", handleMove);
+  }, []);
+
   return (
     <div
       style={{
@@ -31,6 +50,7 @@ export default function SignupPage() {
     >
       {/* ── Left panel ─────────────────────────────────────── */}
       <div
+        ref={leftPanelRef}
         style={{
           display: "none",
           width: "50%",
@@ -39,7 +59,9 @@ export default function SignupPage() {
           overflow: "hidden",
           background: "#0f0e0c",
           flexDirection: "column",
-        }}
+          "--glow-x": "20%",
+          "--glow-y": "20%",
+        } as React.CSSProperties}
         className="md-left-panel"
       >
         {/* India tricolor hairline */}
@@ -53,6 +75,18 @@ export default function SignupPage() {
             background:
               "linear-gradient(to bottom, #FF9933 33.333%, #ffffff 33.333% 66.666%, #138808 66.666%)",
             zIndex: 20,
+          }}
+        />
+
+        {/* Cursor-following glow */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            background: "radial-gradient(ellipse 40% 35% at var(--glow-x) var(--glow-y), rgba(234,88,12,0.13) 0%, transparent 70%)",
+            transition: "background 0.15s ease",
+            zIndex: 5,
           }}
         />
 

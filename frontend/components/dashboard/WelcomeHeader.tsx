@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { animate } from "framer-motion";
+import { animate, motion } from "framer-motion";
 import { ArrowRight, Flame, Zap } from "lucide-react";
 import { useUserStore } from "@/store/user";
 import { Badge } from "@/components/ui/Badge";
@@ -172,7 +172,12 @@ export function WelcomeHeader() {
   const hasProfile = !!profile.businessName;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl ring-1 ring-zinc-200 dark:ring-zinc-800">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 280, damping: 24, delay: 0.05 }}
+      className="relative overflow-hidden rounded-2xl ring-1 ring-zinc-200 dark:ring-zinc-800"
+    >
       {/* Animated tricolor shimmer background */}
       <div className="absolute inset-0 bg-linear-to-r from-orange-50 via-white to-green-50 dark:from-orange-950/20 dark:via-zinc-900 dark:to-green-950/20" />
       <div className="absolute inset-0 bg-linear-to-r from-saffron-400/0 via-saffron-400/5 to-india-green-500/0 animate-shimmer-slow pointer-events-none" />
@@ -218,14 +223,14 @@ export function WelcomeHeader() {
             </p>
             <Link
               href="/dashboard/settings"
-              className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-saffron-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-saffron-600"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-saffron-500 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-saffron-600 hover:shadow-md hover:shadow-saffron-200/50 active:scale-[0.97] dark:hover:shadow-saffron-500/20"
             >
               Set up your profile
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
