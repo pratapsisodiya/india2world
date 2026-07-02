@@ -79,7 +79,7 @@ function ToastItem({
 }) {
   const [visible, setVisible] = useState(false);
   const [leaving, setLeaving] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const duration = toast.duration ?? 3500;
   const Icon = ICONS[toast.type];
   const style = STYLES[toast.type];
